@@ -1,5 +1,12 @@
 import { model, Schema } from "mongoose";
-import { TUser } from "./user.interface";
+import { TUser, TValidation } from "./user.interface";
+
+
+const validationSchema = new Schema<TValidation>({
+    otp: { type: Number, default: 0 },
+    expiry: { type: String, default: null },
+    isVerified: { type: Boolean, default: false },
+})
 
 const UserSchema = new Schema<TUser>({
     name: { type: String, required: true },
@@ -8,6 +15,7 @@ const UserSchema = new Schema<TUser>({
     role: { enum: ["admin", "patient", "doctor"] },
     isActive: { type: Boolean, default: true },
     isDelete: { type: Boolean, default: false },
+    validation: validationSchema
 });
 
 const UserModel = model<TUser>('User', UserSchema);

@@ -5,9 +5,10 @@ import config from "../config";
 type TEmail = {
   to: string;
   html: string;
+  subject: string;
 };
 
-export const sendMail = async ({ to, html }: TEmail) => {
+export const sendMail = async ({ to, html,subject }: TEmail) => {
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
@@ -22,7 +23,7 @@ export const sendMail = async ({ to, html }: TEmail) => {
   await transporter.sendMail({
     from: "masumraihan3667@gmail.com", // sender address
     to, // list of receivers
-    subject: "Your Candymap Account Created Successfully",
+    subject,
     html,
   });
 };

@@ -8,4 +8,11 @@ export type TUser = {
     gender: TGender;
     isActive: boolean;
     isDelete: boolean;
+    validation?:TValidation
+}
+
+export type TValidation = {
+    otp: number;
+    expiry: string;
+    isVerified: boolean;
 }
