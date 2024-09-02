@@ -1,0 +1,376 @@
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>Verify your email address</title>
+  <style type="text/css" rel="stylesheet" media="all">
+    /* Base ------------------------------ */
+    *:not(br):not(tr):not(html) {
+      font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 100% !important;
+      height: 100%;
+      margin: 0;
+      line-height: 1.4;
+      background-color: #F5F7F9;
+      color: #839197;
+      -webkit-text-size-adjust: none;
+    }
+
+    a {
+      color: #414EF9;
+    }
+
+    /* Layout ------------------------------ */
+    .email-wrapper {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      background-color: #F5F7F9;
+    }
+
+    .email-content {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Masthead ----------------------- */
+    .email-masthead {
+      padding: 25px 0;
+      text-align: center;
+    }
+
+    .email-masthead_logo {
+      max-width: 400px;
+      border: 0;
+    }
+
+    .email-masthead_name {
+      font-size: 16px;
+      font-weight: bold;
+      color: #839197;
+      text-decoration: none;
+      text-shadow: 0 1px 0 white;
+    }
+
+    /* Body ------------------------------ */
+    .email-body {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      border-top: 1px solid #E7EAEC;
+      border-bottom: 1px solid #E7EAEC;
+      background-color: #FFFFFF;
+    }
+
+    .email-body_inner {
+      width: 570px;
+      margin: 0 auto;
+      padding: 0;
+    }
+
+    .email-footer {
+      width: 570px;
+      margin: 0 auto;
+      padding: 0;
+      text-align: center;
+    }
+
+    .email-footer p {
+      color: #839197;
+    }
+
+    .body-action {
+      width: 100%;
+      margin: 30px auto;
+      padding: 0;
+      text-align: center;
+    }
+
+    .body-sub {
+      margin-top: 25px;
+      padding-top: 25px;
+      border-top: 1px solid #E7EAEC;
+    }
+
+    .content-cell {
+      padding: 35px;
+    }
+
+    .align-right {
+      text-align: right;
+    }
+
+    /* Type ------------------------------ */
+    h1 {
+      margin-top: 0;
+      color: #292E31;
+      font-size: 19px;
+      font-weight: bold;
+      text-align: left;
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #292E31;
+      font-size: 16px;
+      font-weight: bold;
+      text-align: left;
+    }
+
+    h3 {
+      margin-top: 0;
+      color: #292E31;
+      font-size: 14px;
+      font-weight: bold;
+      text-align: left;
+    }
+
+    p {
+      margin-top: 0;
+      color: #839197;
+      font-size: 16px;
+      line-height: 1.5em;
+      text-align: left;
+    }
+
+    p.sub {
+      font-size: 12px;
+    }
+
+    p.center {
+      text-align: center;
+    }
+
+    /* Buttons ------------------------------ */
+    .button {
+      display: inline-block;
+      width: 200px;
+      background-color: #414EF9;
+      border-radius: 3px;
+      color: #ffffff;
+      font-size: 15px;
+      line-height: 45px;
+      text-align: center;
+      text-decoration: none;
+      -webkit-text-size-adjust: none;
+      mso-hide: all;
+    }
+
+    .button--green {
+      background-color: #28DB67;
+    }
+
+    .button--red {
+      background-color: #FF3665;
+    }
+
+    .button--blue {
+      background-color: #414EF9;
+    }
+
+    /*Media Queries ------------------------------ */
+    @media only screen and (max-width: 600px) {
+
+      .email-body_inner,
+      .email-footer {
+        width: 100% !important;
+      }
+    }
+
+    @media only screen and (max-width: 500px) {
+      .button {
+        width: 100% !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <table class="email-wrapper" width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+      <td align="center">
+        <table class="email-content" width="100%" cellpadding="0" cellspacing="0">
+          <!-- Logo -->
+          <tr>
+            <td class="email-masthead">
+              <a class="email-masthead_name">Candymap</a>
+            </td>
+          </tr>
+          <!-- Email Body -->
+          <tr>
+            <td class="email-body" width="100%">
+              <table class="email-body_inner" align="center" width="570" cellpadding="0" cellspacing="0">
+                <!-- Body content -->
+                <tr>
+                  <td class="content-cell">
+                    <h1>Hi {{name}},</p>
+                      <h3>Your Candymap Account Credentials</h3>
+                      <!-- Sub copy -->
+                      <table class="body-sub">
+                        <tr>
+                          <td>
+                            <p class="sub">
+                              Email: {{email}}
+                            </p>
+                            <p class="sub">
+                              Password: {{password}}
+                            </p>
+
+                          </td>
+                        </tr>
+                      </table>
+                      <!-- Action -->
+                      <table class="body-action" align="center" width="100%" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td align="center">
+                            <div>
+                              <a href="{{app_url}}" class="button button--blue" style="color: white;">Visit App</a>
+                            </div>
+                          </td>
+                        </tr>
+                      </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  <table id="u_content_social_1" style="font-family:'Raleway',sans-serif;" role="presentation" cellpadding="0"
+    cellspacing="0" width="100%" border="0">
+    <tbody>
+      <tr>
+        <td class="v-container-padding-padding"
+          style="overflow-wrap:break-word;word-break:break-word;padding:40px 10px 10px;font-family:'Raleway',sans-serif;"
+          align="left">
+
+          <div align="center">
+            <div style="display: table; max-width:125px;">
+              <!--[if (mso)|(IE)]><table width="125" cellpadding="0" cellspacing="0" border="0"><tr><td style="border-collapse:collapse;" align="center"><table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;  width:125px;"><tr><![endif]-->
+
+
+              <!--[if (mso)|(IE)]><td width="32" style="width:32px; padding-right: 10px;" valign="top"><![endif]-->
+              <table align="left" border="0" cellspacing="0" cellpadding="0" width="32" height="32"
+                style="width: 32px !important;height: 32px !important;display: inline-block;border-collapse: collapse;table-layout: fixed;border-spacing: 0;vertical-align: top;margin-right: 10px">
+                <tbody>
+                  <tr style="vertical-align: top">
+                    <td align="left" valign="middle"
+                      style="word-break: break-word;border-collapse: collapse !important;vertical-align: top">
+                      <a href="https://www.facebook.com/mdmasum.raihan.378/" title="Facebook" target="_blank">
+                        <svg width="32" height="32" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <g clip-path="url(#clip0_17_24)">
+                            <path
+                              d="M48 24C48 10.7453 37.2547 0 24 0C10.7453 0 0 10.7453 0 24C0 35.255 7.74912 44.6995 18.2026 47.2934V31.3344H13.2538V24H18.2026V20.8397C18.2026 12.671 21.8995 8.8848 29.9194 8.8848C31.44 8.8848 34.0637 9.18336 35.137 9.48096V16.129C34.5706 16.0694 33.5866 16.0397 32.3645 16.0397C28.4294 16.0397 26.9088 17.5306 26.9088 21.4061V24H34.7482L33.4013 31.3344H26.9088V47.8243C38.7926 46.3891 48.001 36.2707 48.001 24H48Z"
+                              fill="#0866FF" />
+                            <path
+                              d="M33.4003 31.3344L34.7472 24H26.9078V21.4061C26.9078 17.5306 28.4285 16.0397 32.3635 16.0397C33.5856 16.0397 34.5696 16.0694 35.136 16.129V9.48096C34.0627 9.1824 31.439 8.8848 29.9184 8.8848C21.8986 8.8848 18.2016 12.671 18.2016 20.8397V24H13.2528V31.3344H18.2016V47.2934C20.0582 47.7542 22.0003 48 23.999 48C24.983 48 25.9536 47.9395 26.9069 47.8243V31.3344H33.3994H33.4003Z"
+                              fill="white" />
+                          </g>
+                          <defs>
+                            <clipPath id="clip0_17_24">
+                              <rect width="48" height="48" fill="white" />
+                            </clipPath>
+                          </defs>
+                        </svg>
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <!--[if (mso)|(IE)]></td><![endif]-->
+
+              <!--[if (mso)|(IE)]><td width="32" style="width:32px; padding-right: 10px;" valign="top"><![endif]-->
+              <table align="left" border="0" cellspacing="0" cellpadding="0" width="32" height="32"
+                style="width: 32px !important;height: 32px !important;display: inline-block;border-collapse: collapse;table-layout: fixed;border-spacing: 0;vertical-align: top;margin-right: 10px">
+                <tbody>
+                  <tr style="vertical-align: top">
+                    <td align="left" valign="middle"
+                      style="word-break: break-word;border-collapse: collapse !important;vertical-align: top">
+                      <a href="https://www.linkedin.com/in/md-masum-raihan-35b22b1ab/" title="LinkedIn" target="_blank">
+                        <svg width="32" height="32" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <g clip-path="url(#clip0_17_32)">
+                            <path
+                              d="M44.4567 0H3.54333C2.60358 0 1.70232 0.373315 1.03782 1.03782C0.373315 1.70232 0 2.60358 0 3.54333V44.4567C0 45.3964 0.373315 46.2977 1.03782 46.9622C1.70232 47.6267 2.60358 48 3.54333 48H44.4567C45.3964 48 46.2977 47.6267 46.9622 46.9622C47.6267 46.2977 48 45.3964 48 44.4567V3.54333C48 2.60358 47.6267 1.70232 46.9622 1.03782C46.2977 0.373315 45.3964 0 44.4567 0ZM14.3067 40.89H7.09V17.9667H14.3067V40.89ZM10.6933 14.79C9.87473 14.7854 9.07583 14.5384 8.39747 14.0802C7.71911 13.622 7.19168 12.9731 6.88175 12.2154C6.57183 11.4577 6.4933 10.6252 6.65606 9.82291C6.81883 9.02063 7.2156 8.28455 7.79631 7.70756C8.37702 7.13057 9.11563 6.73853 9.91893 6.58092C10.7222 6.42331 11.5542 6.50719 12.3099 6.82197C13.0656 7.13675 13.7111 7.66833 14.1649 8.34962C14.6188 9.03092 14.8606 9.83138 14.86 10.65C14.8677 11.1981 14.765 11.7421 14.558 12.2496C14.351 12.7571 14.044 13.2178 13.6551 13.6041C13.2663 13.9905 12.8037 14.2946 12.2948 14.4983C11.786 14.702 11.2413 14.8012 10.6933 14.79ZM40.9067 40.91H33.6933V28.3867C33.6933 24.6933 32.1233 23.5533 30.0967 23.5533C27.9567 23.5533 25.8567 25.1667 25.8567 28.48V40.91H18.64V17.9833H25.58V21.16H25.6733C26.37 19.75 28.81 17.34 32.5333 17.34C36.56 17.34 40.91 19.73 40.91 26.73L40.9067 40.91Z"
+                              fill="#0A66C2" />
+                          </g>
+                          <defs>
+                            <clipPath id="clip0_17_32">
+                              <rect width="48" height="48" fill="white" />
+                            </clipPath>
+                          </defs>
+                        </svg>
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <table align="left" border="0" cellspacing="0" cellpadding="0" width="32" height="32"
+                style="width: 32px !important;height: 32px !important;display: inline-block;border-collapse: collapse;table-layout: fixed;border-spacing: 0;vertical-align: top;margin-right: 0px">
+                <tbody>
+                  <tr style="vertical-align: top">
+                    <td align="left" valign="middle"
+                      style="word-break: break-word;border-collapse: collapse !important;vertical-align: top">
+                      <a href="https://github.com/Masumraihan" title="GitHub" target="_blank">
+                        <svg width="32" height="32" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <g clip-path="url(#clip0_910_21)">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                              d="M24.0199 0C10.7375 0 0 10.8167 0 24.1983C0 34.895 6.87988 43.9495 16.4241 47.1542C17.6174 47.3951 18.0545 46.6335 18.0545 45.9929C18.0545 45.4319 18.0151 43.509 18.0151 41.5055C11.3334 42.948 9.94198 38.6209 9.94198 38.6209C8.86818 35.8164 7.27715 35.0956 7.27715 35.0956C5.09022 33.6132 7.43645 33.6132 7.43645 33.6132C9.86233 33.7735 11.1353 36.0971 11.1353 36.0971C13.2824 39.7827 16.7422 38.7413 18.1341 38.1002C18.3328 36.5377 18.9695 35.456 19.6455 34.8552C14.3163 34.2942 8.70937 32.211 8.70937 22.9161C8.70937 20.2719 9.66321 18.1086 11.1746 16.4261C10.9361 15.8253 10.1008 13.3409 11.4135 10.0157C11.4135 10.0157 13.4417 9.3746 18.0146 12.4996C19.9725 11.9699 21.9916 11.7005 24.0199 11.6982C26.048 11.6982 28.1154 11.979 30.0246 12.4996C34.5981 9.3746 36.6262 10.0157 36.6262 10.0157C37.9389 13.3409 37.1031 15.8253 36.8646 16.4261C38.4158 18.1086 39.3303 20.2719 39.3303 22.9161C39.3303 32.211 33.7234 34.2539 28.3544 34.8552C29.2296 35.6163 29.9848 37.0583 29.9848 39.3421C29.9848 42.5871 29.9454 45.1915 29.9454 45.9924C29.9454 46.6335 30.383 47.3951 31.5758 47.1547C41.12 43.9491 47.9999 34.895 47.9999 24.1983C48.0392 10.8167 37.2624 0 24.0199 0Z"
+                              fill="#24292F" />
+                          </g>
+                          <defs>
+                            <clipPath id="clip0_910_21">
+                              <rect width="48" height="48" fill="white" />
+                            </clipPath>
+                          </defs>
+                        </svg>
+
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+            </div>
+          </div>
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <table id="u_content_image_2" style="font-family:'Raleway',sans-serif;" role="presentation" cellpadding="0"
+    cellspacing="0" width="100%" border="0">
+    <tbody>
+      <tr>
+        <td class="v-container-padding-padding"
+          style="overflow-wrap:break-word;word-break:break-word;padding:30px 10px 40px;font-family:'Raleway',sans-serif;"
+          align="left">
+
+          <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              <td style="padding-right: 0px;padding-left: 0px;" align="center">
+
+                <span> @ Masum Raihan All rights reserved</span>
+              </td>
+            </tr>
+          </table>
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+
+</html>
