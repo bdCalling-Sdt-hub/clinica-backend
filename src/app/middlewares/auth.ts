@@ -5,6 +5,7 @@ import AppError from "../errors/AppError";
 
 import { CustomRequest, TTokenUser, TUserRole } from "../types/common";
 import catchAsync from "../utils/catchAsync";
+import UserModel from "../modules/user/user.model";
 
 const auth = (...requiredRole: TUserRole[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -24,6 +25,16 @@ const auth = (...requiredRole: TUserRole[]) => {
     }
     const { role, email, iat } = decode;
     // CHECK USER EXIST OR NOT
+    const userData = await UserModel.findOne({ email, isActive: true, isDelete: false });
+
+    if (!userData) {
+      throw new AppError(401, "Unauthorized");
+    }
+
+    // CHECK USER ROLE
+    if (requiredRole.length && !requiredRole.includes(role)) {
+      throw new AppError(401, "Unauthorized");
+    }
 
     (req as CustomRequest).user = decode;
     next();

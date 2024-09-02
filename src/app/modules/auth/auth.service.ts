@@ -7,6 +7,8 @@ import PatientModel from "../patient/patient.model";
 import { TUser } from "../user/user.interface";
 import UserModel from "../user/user.model";
 import { createToken } from "./auth.utils";
+import { TUserRole } from "../../types/common";
+import jwt from "jsonwebtoken";
 
 const createPatientIntoDb = async (payload: TUser) => {
   const hashedPassword = await bcrypt.hash(payload.password, Number(config.bcrypt_salt_rounds));
@@ -22,7 +24,7 @@ const createPatientIntoDb = async (payload: TUser) => {
  
 
     // Retrieve the created User document
-    const userData = await UserModel.findOne({ email: payload.email }).session(session);
+    const userData = await UserModel.findOne({ email: payload.email,isActive:true,isDelete:false }).session(session);
     if (!userData) {
       throw new AppError(httpStatus.NOT_FOUND, "User not found");
     }
@@ -61,7 +63,7 @@ const createPatientIntoDb = async (payload: TUser) => {
 };
 
 const signInIntoDb = async (payload:{email:string,password:string}) => {
-  const userData = await UserModel.findOne({ email: payload.email });
+  const userData = await UserModel.findOne({ email: payload.email,isActive:true,isDelete:false });
 
   if (!userData) {
     throw new AppError(httpStatus.NOT_FOUND, "Invalid Email");
@@ -93,7 +95,21 @@ const signInIntoDb = async (payload:{email:string,password:string}) => {
 }
 
 const refreshToken = async (refreshToken:string) => {
-    console.log(refreshToken)
+
+  const payload = jwt.verify(refreshToken, config.jwt_refresh_secret as string) as {
+    email: string;
+    role: TUserRole;
+  };
+  const jwtPayload = { email: payload.email, role: payload.role };
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    config.access_token_expire_in as string,
+  );
+  return {
+    accessToken
+  }
+  
 }
 
 const forgetPasswordIntoDb = async () => {
