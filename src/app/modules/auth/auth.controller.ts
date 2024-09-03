@@ -3,25 +3,18 @@ import config from "../../config";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { AuthServices } from "./auth.service";
+import { Request, Response } from "express";
 
-const createPatient = catchAsync(async (req, res) => {
-    const result = await AuthServices.createPatientIntoDb(req.body);
+const createPatient = catchAsync(async (req: Request, res: Response) => {
+  const result = await AuthServices.createPatientIntoDb(req.body);
 
-  res.cookie('refreshToken', refreshToken, {
-    secure: config.NODE_ENV === 'production',
-    httpOnly: true,
-    sameSite: 'none',
-    maxAge: 1000 * 60 * 60 * 24 * 365,
-  });
-
-  sendResponse(res, {
+  sendResponse(req, res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Sign Up successfully!, please verify your email',
-    data:result
+    data: result,
   });
 });
-
 
 const verifyAccount = catchAsync(async (req, res) => {
   const {token} = req.headers
@@ -33,7 +26,7 @@ const verifyAccount = catchAsync(async (req, res) => {
     maxAge: 1000 * 60 * 60 * 24 * 365,
   });
 
-  sendResponse(res, {
+  sendResponse(req,res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Account verified successfully',
@@ -45,7 +38,7 @@ const verifyAccount = catchAsync(async (req, res) => {
 
 const resendOtp = catchAsync(async (req, res) => {
   const {token} = await AuthServices.resendOtp(req.body);
-  sendResponse(res, {
+  sendResponse(req,res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Otp resend successfully',
@@ -66,7 +59,7 @@ const signIn = catchAsync(async (req, res) => {
       maxAge: 1000 * 60 * 60 * 24 * 365,
     });
   
-    sendResponse(res, {
+    sendResponse(req,res, {
       statusCode: httpStatus.OK,
       success: true,
       message: 'Sign Up successfully!',
@@ -79,7 +72,7 @@ const signIn = catchAsync(async (req, res) => {
 const refreshToken = catchAsync(async (req, res) => {
   const { refreshToken } = req.cookies;
     const {accessToken} = await AuthServices.refreshToken(refreshToken);
-    sendResponse(res, {
+    sendResponse(req,res, {
         statusCode: httpStatus.OK,
         success: true,
         message: "Access token successfully",
@@ -93,7 +86,7 @@ const forgetPassword = catchAsync(async (req, res) => {
   const email = req.body.email
   const result = await AuthServices.forgetPasswordIntoDb(email);
 
-  sendResponse(res, {
+  sendResponse(req,res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Please check you email',
@@ -112,7 +105,7 @@ const resetPassword = catchAsync(async (req, res) => {
     maxAge: 1000 * 60 * 60 * 24 * 365,
   });
 
-  sendResponse(res, {
+  sendResponse(req,res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Password reset successfully!',

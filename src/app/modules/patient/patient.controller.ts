@@ -1,9 +1,8 @@
 import httpStatus from "http-status";
+import { CustomRequest } from "../../types/common";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { PatientServices } from "./patient.service";
-import pick from "../../utils/pick";
-import { CustomRequest } from "../../types/common";
 
 const getPatients = catchAsync(async (req, res) => {
     const result = await PatientServices.getAllPatientsFromDb(req.query);
@@ -38,7 +37,8 @@ const getPatientProfile = catchAsync(async (req, res) => {
 
 
 const updatePatientProfile = catchAsync(async (req, res) => {
-    const result = await PatientServices.updatePatientProfile();
+    const user = (req as CustomRequest).user
+    const result = await PatientServices.updatePatientProfile(user);
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,

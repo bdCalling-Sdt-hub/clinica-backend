@@ -35,16 +35,15 @@ const createPatientIntoDb = async (payload: TUser) => {
     }
 
     if (!userData.isActive) {
-      throw new AppError(httpStatus.UNAUTHORIZED, "Account is Deactivated");
+      throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
     }
     if (userData.isDelete) {
-      throw new AppError(httpStatus.UNAUTHORIZED, "Account is Deleted");
+      throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
     }
 
        // Create Patient document
        await PatientModel.create([{ ...payload, role: "patient",user:userData._id,slug:userData.slug }], { session });
 
-       
     //  SEND EMAIL FOR VERIFICATION
     const otp = Math.floor(100000 + Math.random() * 900000);   
     const currentTime = new Date();
@@ -69,7 +68,6 @@ const createPatientIntoDb = async (payload: TUser) => {
       config.jwt_reset_secret as string,
       "3m"
     );
-
 
     // Commit the transaction
     await session.commitTransaction();
@@ -103,14 +101,14 @@ const verifyAccount = async (token:string,payload:{email:string,otp:number}) => 
   }
 
   if (!userData.isActive) {
-    throw new AppError(httpStatus.UNAUTHORIZED, "Account is Deactivated");
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
   }
   if (userData.isDelete) {
-    throw new AppError(httpStatus.UNAUTHORIZED, "Account is Deleted");
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
   }
 
   if (userData.validation?.isVerified === true) {
-    throw new AppError(httpStatus.UNAUTHORIZED, "Account is already verified");
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is already verified");
   }
 
   console.log(userData.validation,payload)
@@ -153,10 +151,10 @@ const resendOtp = async (payload:{email:string}) => {
     }
 
     if (!userData.isActive) {
-      throw new AppError(httpStatus.UNAUTHORIZED, "Account is Deactivated");
+      throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
     }
     if (userData.isDelete) {
-      throw new AppError(httpStatus.UNAUTHORIZED, "Account is Deleted");
+      throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
     }
 
   //  SEND EMAIL FOR VERIFICATION
@@ -197,19 +195,19 @@ const signInIntoDb = async (payload:{email:string,password:string}) => {
   }
 
   if (!userData.isActive) {
-    throw new AppError(httpStatus.UNAUTHORIZED, "Account is Deactivated");
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
   }
   if (userData.isDelete) {
-    throw new AppError(httpStatus.UNAUTHORIZED, "Account is Deleted");
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
   }
 
   const isMatch = await bcrypt.compare(payload.password, userData.password);
   if (!isMatch) {
-    throw new AppError(httpStatus.UNAUTHORIZED, "Invalid Password");
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid Password");
   }
 
   if (userData.validation?.isVerified === false) {
-    throw new AppError(httpStatus.UNAUTHORIZED, "Account is not verified");
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is not verified");
   }
 
   const jwtPayload = { email: userData.email, role: userData.role };
@@ -231,14 +229,27 @@ const signInIntoDb = async (payload:{email:string,password:string}) => {
 }
 
 
-
-
 const refreshToken = async (refreshToken:string) => {
 
   const payload = jwt.verify(refreshToken, config.jwt_refresh_secret as string) as {
     email: string;
     role: TUserRole;
   };
+
+  const userData = await UserModel.findOne({ email: payload.email }).select("+password").lean();
+  if (!userData) {
+    throw new AppError(httpStatus.NOT_FOUND, "Invalid Email");
+  }
+  if (!userData.isActive) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
+  }
+  if (userData.isDelete) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
+  }
+  if (!userData.validation?.isVerified) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
+  }
+
   const jwtPayload = { email: payload.email, role: payload.role };
   const accessToken = createToken(
     jwtPayload,
@@ -257,13 +268,13 @@ const forgetPasswordIntoDb = async (email:string) => {
       throw new AppError(httpStatus.NOT_FOUND, "Invalid Email");
     }
     if (!userData.isActive) {
-      throw new AppError(httpStatus.UNAUTHORIZED, "Account is Deactivated");
+      throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
     }
     if (userData.isDelete) {
-      throw new AppError(httpStatus.UNAUTHORIZED, "Account is Deleted");
+      throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
     }
     if (!userData.validation?.isVerified) {
-      throw new AppError(httpStatus.UNAUTHORIZED, "Your Account is not verified");
+      throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000);   
@@ -296,14 +307,14 @@ const resetPassword = async (token:string, payload:{email:string,otp:string,pass
     throw new AppError(httpStatus.NOT_FOUND, "Invalid Email");
   } 
   if (userData.isDelete) {
-    throw new AppError(httpStatus.UNAUTHORIZED, "Account is Deleted");
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
   } 
   if (!userData.isActive) {
-    throw new AppError(httpStatus.UNAUTHORIZED, "Account is Deactivated");
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
   }
 
   if (payload.otp !== userData.validation?.otp.toString()) {
-    throw new AppError(httpStatus.UNAUTHORIZED, "Invalid Otp");
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid Otp");
   }
 
   

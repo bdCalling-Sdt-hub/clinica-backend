@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 
 type TMeta = {
   page: number;
@@ -15,10 +15,10 @@ type TResponse<T> = {
   meta?: TMeta;
 };
 
-const sendResponse = <T>(res: Response, data: TResponse<T>) => {
+const sendResponse = <T>(req: Request, res: Response, data: TResponse<T>) => {
   res.status(data?.statusCode).json({
     success: data?.success,
-    message: data?.message,
+    message:data.message,
     meta: data?.meta,
     data: data?.data,
   });

@@ -6,7 +6,7 @@ import { AuthValidations } from "./authValidation";
 import auth from "../../middlewares/auth";
 
 const router = Router();
-router.get("/refresh-token", auth(), AuthController.refreshToken);
+router.get("/refresh-token", AuthController.refreshToken);
 router.post("/sign-up", validateRequest(PatientValidation.createPatient),AuthController.createPatient);
 router.post("/sign-in", validateRequest(AuthValidations.signInValidation),AuthController.signIn);
 router.post("/forget-password", validateRequest(AuthValidations.forgetPasswordValidation), AuthController.forgetPassword);
