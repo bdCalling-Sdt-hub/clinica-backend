@@ -20,8 +20,24 @@ const refreshTokenValidation = z.object({
     })
   })
 
+
+  const optValidation = z.object({
+    body:z.object({
+      email: z.string({required_error:"Email is required"}).email({ message: "Invalid email address" }),
+      otp: z.number({required_error:"OTP is required"}),
+    })
+  })
+
+  const resendOtpValidation = z.object({
+    body:z.object({
+      email: z.string({required_error:"Email is required"}).email({ message: "Invalid email address" }),
+    })
+  })
+
 export const AuthValidations = {
     signInValidation,
     refreshTokenValidation,
-    forgetPasswordValidation
+    forgetPasswordValidation,
+    optValidation,
+    resendOtpValidation
 }

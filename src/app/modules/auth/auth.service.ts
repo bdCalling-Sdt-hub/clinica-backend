@@ -144,8 +144,53 @@ const verifyAccount = async (token:string,payload:{email:string,otp:number}) => 
 
 }
 
+const resendOtp = async (payload:{email:string}) => {
+
+  const userData = await UserModel.findOne({ email: payload.email});
+
+    if (!userData) {
+      throw new AppError(httpStatus.NOT_FOUND, "Invalid Email");
+    }
+
+    if (!userData.isActive) {
+      throw new AppError(httpStatus.UNAUTHORIZED, "Account is Deactivated");
+    }
+    if (userData.isDelete) {
+      throw new AppError(httpStatus.UNAUTHORIZED, "Account is Deleted");
+    }
+
+  //  SEND EMAIL FOR VERIFICATION
+  const otp = Math.floor(100000 + Math.random() * 900000);   
+  const currentTime = new Date();
+  // generate token
+  const expiresAt = moment(currentTime).add(3, 'minute');
+
+
+  await UserModel.findOneAndUpdate({email:userData.email}, {validation:{isVerified:false,otp,expiry:expiresAt.toString()}})
+  const parentMailTemplate = path.join(process.cwd(), "/src/template/email.html");
+  const forgetOtpEmail = fs.readFileSync(parentMailTemplate, "utf-8");
+  const html = forgetOtpEmail
+    .replace(/{{name}}/g, userData.name)
+    .replace(/{{otp}}/g, otp.toString());
+    sendMail({to:userData.email, html, subject: "Forget Password Otp From Clinica"});
+
+
+    // after send verification email put the otp into db
+  const updatedUser = await  UserModel.findByIdAndUpdate(userData._id, { validation: {otp, expiry: expiresAt.toString(), isVerified: false } }, { new: true,runValidators:true });
+
+  const jwtPayload = { email: userData.email, role: userData.role };
+  const token = createToken(
+    jwtPayload,
+    config.jwt_reset_secret as string,
+    "3m"
+  );
+return {
+  token
+}
+}
+
 const signInIntoDb = async (payload:{email:string,password:string}) => {
-  const userData = await UserModel.findOne({ email: payload.email });
+  const userData = await UserModel.findOne({ email: payload.email }).select("+password").lean();
 
   if (!userData) {
     throw new AppError(httpStatus.NOT_FOUND, "Invalid Email");
@@ -179,12 +224,14 @@ const signInIntoDb = async (payload:{email:string,password:string}) => {
     config.jwt_refresh_secret as string,
     config.refresh_token_expire_in as string,
   );
-
   return {
     accessToken,
     refreshToken,
   };
 }
+
+
+
 
 const refreshToken = async (refreshToken:string) => {
 
@@ -290,5 +337,6 @@ export const AuthServices = {
     refreshToken,
     forgetPasswordIntoDb,
     resetPassword,
-    verifyAccount
+    verifyAccount,
+    resendOtp
 }

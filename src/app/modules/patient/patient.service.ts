@@ -1,4 +1,5 @@
 import QueryBuilder from "../../builder/QueryBuilder"
+import { TTokenUser } from "../../types/common";
 import PatientModel from "./patient.model"
 
 const getAllPatientsFromDb = async(query: Record<string, unknown>) => {
@@ -13,8 +14,8 @@ const getSinglePatientFromDb = async(slug:string) => {
     return result
 }
 
-const getPatientProfile = async() => {
-    console.log("get patient profile")
+const getPatientProfile = async(user:TTokenUser) => {
+    console.log(user)
 }
 
 const updatePatientProfile = async() => {

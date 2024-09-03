@@ -43,6 +43,18 @@ const verifyAccount = catchAsync(async (req, res) => {
   });
 });
 
+const resendOtp = catchAsync(async (req, res) => {
+  const {token} = await AuthServices.resendOtp(req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Otp resend successfully',
+    data:{
+      token,
+    }
+  });
+
+})
 const signIn = catchAsync(async (req, res) => {
     const result = await AuthServices.signInIntoDb(req.body);
     const { refreshToken, accessToken} = result;
@@ -117,5 +129,6 @@ export const AuthController = {
     refreshToken,
     forgetPassword,
     resetPassword,
-    verifyAccount
+    verifyAccount,
+    resendOtp,
 }

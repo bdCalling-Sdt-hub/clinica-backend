@@ -3,6 +3,7 @@ import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { PatientServices } from "./patient.service";
 import pick from "../../utils/pick";
+import { CustomRequest } from "../../types/common";
 
 const getPatients = catchAsync(async (req, res) => {
     const result = await PatientServices.getAllPatientsFromDb(req.query);
@@ -25,7 +26,8 @@ const getSinglePatient = catchAsync(async (req, res) => {
 })
 
 const getPatientProfile = catchAsync(async (req, res) => {
-    const result = await PatientServices.getPatientProfile();
+    const user = (req as CustomRequest).user
+    const result = await PatientServices.getPatientProfile(user);
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,

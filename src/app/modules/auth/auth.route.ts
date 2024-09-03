@@ -11,6 +11,6 @@ router.post("/sign-up", validateRequest(PatientValidation.createPatient),AuthCon
 router.post("/sign-in", validateRequest(AuthValidations.signInValidation),AuthController.signIn);
 router.post("/forget-password", validateRequest(AuthValidations.forgetPasswordValidation), AuthController.forgetPassword);
 router.post("/reset-password", AuthController.resetPassword);
-router.post("/verify-account", AuthController.verifyAccount);
-
+router.post("/verify-account", validateRequest(AuthValidations.optValidation), AuthController.verifyAccount);
+router.post("/resend-otp", validateRequest(AuthValidations.resendOtpValidation), AuthController.resendOtp);
 export const AuthRoute = router;
