@@ -1,57 +1,62 @@
-import { z } from "zod";
+import { model, Schema } from "mongoose";
+import { TPatient } from "./patient.interface";
 
-// Zod schema for Blood Pressure
-const bloodPressureSchema = z.object({
-    date: z.string({ required_error: "Date is required" }),
-    time: z.string({ required_error: "Time is required" }),
-    systolic: z.number({ required_error: "Systolic value is required" }),
-    diastolic: z.number({ required_error: "Diastolic value is required" }),
+// Schema for Blood Pressure
+const bloodPressureSchema = new Schema({
+    date: { type: String, required: true },
+    time: { type: String, required: true },
+    systolic: { type: Number, required: true },
+    diastolic: { type: Number, required: true },
 });
 
-// Zod schema for Glucose
-const glucoseSchema = z.object({
-    date: z.string({ required_error: "Date is required" }),
-    time: z.string({ required_error: "Time is required" }),
-    label: z.string({ required_error: "Label is required" }),
-    data: z.number({ required_error: "Data value is required" }),
+// Schema for Glucose
+const glucoseSchema = new Schema({
+    date: { type: String, required: true },
+    time: { type: String, required: true },
+    label: { type: String, required: true },
+    data: { type: Number, required: true },
+}, {
+    timestamps: true, 
 });
 
-// Zod schema for Weight
-const weightSchema = z.object({
-    date: z.string({ required_error: "Date is required" }),
-    time: z.string({ required_error: "Time is required" }),
-    weight: z.number({ required_error: "Weight is required" }),
+// Schema for Weight
+const weightSchema = new Schema({
+    date: { type: String, required: true },
+    time: { type: String, required: true },
+    weight: { type: Number, required: true },
+}, {
+    timestamps: true, 
 });
 
-// Zod schema for TPatient
-const createPatient = z.object({
-  body: z.object({
-    user: z.string({ required_error: "User ID is required" }), 
-    dateOfBirth: z.string().nullable().optional(),
-    bloodGroup: z.enum(["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"]).nullable().optional(),
-    height: z.string().nullable().optional(),
-    lastMenstrualPeriod: z.string().nullable().optional(),
-    weightBeginningPregnancy: z.string().nullable().optional(),
-    pregnancyType: z.enum(["single", "multiple"]).default("single"),
-    vitroFertilization: z.boolean().optional().default(false),
-    profilePicture: z.string().nullable().optional(),
-    chronicHypertension: z.boolean().optional().default(false),
-    lupus: z.boolean().optional().default(false),
-    gestationalAge: z.string().nullable().optional(),
-    antiphospholipidSyndrome: z.boolean().optional().default(false),
-    motherPreeclampsiaHistory: z.boolean().optional().default(false),
-    firstPregnancy: z.boolean().optional().default(false),
-    historyOfPreeclampsia: z.boolean().optional().default(false),
-    babyBelow2500Grams: z.boolean().optional().default(false),
-    higherRiskOfPreeclampsia: z.boolean().optional().default(false),
-    bloodPressure: z.array(bloodPressureSchema).optional().default([]),
-    glucose: z.array(glucoseSchema).optional().default([]),
-    weight: z.array(weightSchema).optional().default([]),
-    isActive: z.boolean().default(true),
-    isDelete: z.boolean().default(false),
-  }),
+// Patient Schema
+const PatientSchema = new Schema<TPatient>({
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    dateOfBirth: { type: String, default: null },
+    bloodGroup: { type: String, enum: ["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"], default: null },
+    height: { type: String, default: null },
+    lastMenstrualPeriod: { type: String, default: null },
+    weightBeginningPregnancy: { type: String, default: null },
+    pregnancyType: { type: String, enum: ["single", "multiple"], default: "single" },
+    vitroFertilization: { type: Boolean, default: false },
+    profilePicture: { type: String, default: null },
+    chronicHypertension: { type: Boolean, default: false },
+    lupus: { type: Boolean, default: false },
+    gestationalAge: { type: String, default: null },
+    antiphospholipidSyndrome: { type: Boolean, default: false },
+    motherPreeclampsiaHistory: { type: Boolean, default: false },
+    firstPregnancy: { type: Boolean, default: false },
+    historyOfPreeclampsia: { type: Boolean, default: false },
+    babyBelow2500Grams: { type: Boolean, default: false },
+    higherRiskOfPreeclampsia: { type: Boolean, default: false },
+    bloodPressure: { type: [bloodPressureSchema], default: [] },
+    glucose: { type: [glucoseSchema], default: [] },
+    weight: { type: [weightSchema], default: [] },
+    isActive: { type: Boolean, default: true },
+    isDelete: { type: Boolean, default: false },
+}, {
+    timestamps: true, 
 });
 
-export const PatientValidation = {
-  createPatient,
-};
+const PatientModel = model<TPatient>('Patient', PatientSchema);
+
+export default PatientModel;

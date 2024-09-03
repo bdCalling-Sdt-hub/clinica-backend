@@ -1,37 +1,57 @@
 import { z } from "zod";
 
+// Zod schema for Blood Pressure
+const bloodPressureSchema = z.object({
+    date: z.string({ required_error: "Date is required" }),
+    time: z.string({ required_error: "Time is required" }),
+    systolic: z.number({ required_error: "Systolic value is required" }),
+    diastolic: z.number({ required_error: "Diastolic value is required" }),
+}).strict();
+
+// Zod schema for Glucose
+const glucoseSchema = z.object({
+    date: z.string({ required_error: "Date is required" }),
+    time: z.string({ required_error: "Time is required" }),
+    label: z.string({ required_error: "Label is required" }),
+    data: z.number({ required_error: "Data value is required" }),
+}).strict();
+
+// Zod schema for Weight
+const weightSchema = z.object({
+    date: z.string({ required_error: "Date is required" }),
+    time: z.string({ required_error: "Time is required" }),
+    weight: z.number({ required_error: "Weight is required" }),
+}).strict();
+
 // Zod schema for TPatient
 const createPatient = z.object({
   body: z.object({
-    name: z.string({ message: "Name is required" }),
-    email: z.string().email({ message: "Invalid email address" }),
-    contact: z.string({ message: "Contact number is required" }),
-    password: z.string().min(6, { message: "Password must be at least 6 characters long" }),
-    dateOfBirth: z.string().optional(),
-    gender: z.enum(["male", "female"], { message: "Gender must be either 'male' or 'female'" }),
-    bloodGroup: z.enum(["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"]).optional(),
-    height: z.string().optional(),
-    weight: z.string().optional(),
-    lastMenstrualPeriod: z.string().optional(),
-    weightBeginningPregnancy: z.string().optional(),
-    pregnancyType: z.enum(["single", "multiple"]).optional(),
-    vitroFertilization: z.boolean().optional(),
-    profilePicture: z.string().optional(),
-    chronicHypertension: z.boolean().optional(),
-    lupus: z.boolean().optional(),
-    antiphospholipidSyndrome: z.boolean().optional(),
-    motherPreeclampsiaHistory: z.boolean().optional(),
-    firstPregnancy: z.boolean().optional(),
-    historyOfPreeclampsia: z.boolean().optional(),
-    babyBelow2500Grams: z.boolean().optional(),
-    higherRiskOfPreeclampsia: z.boolean().optional(),
+    user: z.string({ required_error: "User ID is required" }), 
+    dateOfBirth: z.string().nullable().optional(),
+    bloodGroup: z.enum(["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"]).nullable().optional(),
+    height: z.string().nullable().optional(),
+    lastMenstrualPeriod: z.string().nullable().optional(),
+    weightBeginningPregnancy: z.string().nullable().optional(),
+    pregnancyType: z.enum(["single", "multiple"]).default("single"),
+    vitroFertilization: z.boolean().optional().default(false),
+    profilePicture: z.string().nullable().optional(),
+    chronicHypertension: z.boolean().optional().default(false),
+    lupus: z.boolean().optional().default(false),
+    gestationalAge: z.string().nullable().optional(),
+    antiphospholipidSyndrome: z.boolean().optional().default(false),
+    motherPreeclampsiaHistory: z.boolean().optional().default(false),
+    firstPregnancy: z.boolean().optional().default(false),
+    historyOfPreeclampsia: z.boolean().optional().default(false),
+    babyBelow2500Grams: z.boolean().optional().default(false),
+    higherRiskOfPreeclampsia: z.boolean().optional().default(false),
+    bloodPressure: z.array(bloodPressureSchema).optional().default([]),
+    glucose: z.array(glucoseSchema).optional().default([]),
+    weight: z.array(weightSchema).optional().default([]),
     isActive: z.boolean().default(true),
     isDelete: z.boolean().default(false),
-  })
-});
-
-
+  }),
+}).strict();
 
 export const PatientValidation = {
   createPatient,
-}
+};
