@@ -1,2 +1,55 @@
+import httpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
+import sendResponse from "../../utils/sendResponse";
+import { PatientServices } from "./patient.service";
+import pick from "../../utils/pick";
+
+const getPatients = catchAsync(async (req, res) => {
+    const result = await PatientServices.getAllPatientsFromDb(req.query);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Patients fetched successfully',
+        data:result
+      });
+})
+
+const getSinglePatient = catchAsync(async (req, res) => {
+    const result = await PatientServices.getSinglePatientFromDb(req.params.slug);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Patient fetched successfully',
+        data:result
+      });
+})
+
+const getPatientProfile = catchAsync(async (req, res) => {
+    const result = await PatientServices.getPatientProfile();
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Profile fetched successfully',
+        data:result
+      });
+})
+
+
+const updatePatientProfile = catchAsync(async (req, res) => {
+    const result = await PatientServices.updatePatientProfile();
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Profile updated successfully',
+        data:result
+      });
+})
+
+
+export const PatientController = {
+    getPatients,
+    getSinglePatient,
+    getPatientProfile,
+    updatePatientProfile
+}
 

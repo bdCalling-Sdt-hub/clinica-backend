@@ -9,14 +9,17 @@ const validationSchema = new Schema<TValidation>({
 })
 
 const UserSchema = new Schema<TUser>({
-    name: { type: String, required: true },
+    name: { type: String, required: true, unique:true },
+    slug: { type: String, required: true, unique:true },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    password: { type: String, required: true,select:0 },
     role: { type: String, enum: ["admin", "patient", "doctor"],required:true },
     isActive: { type: Boolean, default: true },
     isDelete: { type: Boolean, default: false },
     validation: {type:validationSchema}
 });
+
+
 
 const UserModel = model<TUser>('User', UserSchema);
 export default UserModel

@@ -30,7 +30,8 @@ const weightSchema = new Schema({
 
 // Patient Schema
 const PatientSchema = new Schema<TPatient>({
-    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true,unique:true },
+    slug: { type: String, required: true, unique: true },
     dateOfBirth: { type: String, default: null },
     bloodGroup: { type: String, enum: ["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"], default: null },
     height: { type: String, default: null },
@@ -56,6 +57,7 @@ const PatientSchema = new Schema<TPatient>({
 }, {
     timestamps: true, 
 });
+
 
 const PatientModel = model<TPatient>('Patient', PatientSchema);
 

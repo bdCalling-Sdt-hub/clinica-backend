@@ -13,21 +13,23 @@ import { sendMail } from "../../utils/sendMail";
 import fs from "fs"
 import path from "path"
 import moment from "moment";
+import { generateSlug } from "../../utils/generateSlug";
 
 const createPatientIntoDb = async (payload: TUser) => {
   const hashedPassword = await bcrypt.hash(payload.password, Number(config.bcrypt_salt_rounds));
   payload.password = hashedPassword;
-
-
+  const slug = generateSlug(payload.name)
+  payload.slug = slug
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
-
+    payload.role = "patient";
     // Create User document
    const user = await UserModel.create([payload], { session });
 
     // Retrieve the created User document
     const userData = await UserModel.findOne({ email: payload.email}).session(session);
+
     if (!userData) {
       throw new AppError(httpStatus.NOT_FOUND, "Invalid Email");
     }
@@ -38,8 +40,9 @@ const createPatientIntoDb = async (payload: TUser) => {
     if (userData.isDelete) {
       throw new AppError(httpStatus.UNAUTHORIZED, "Account is Deleted");
     }
+
        // Create Patient document
-       await PatientModel.create([{ ...payload, role: "patient",user:userData._id }], { session });
+       await PatientModel.create([{ ...payload, role: "patient",user:userData._id,slug:userData.slug }], { session });
 
        
     //  SEND EMAIL FOR VERIFICATION
@@ -59,7 +62,6 @@ const createPatientIntoDb = async (payload: TUser) => {
 
       // after send verification email put the otp into db
     const updatedUser = await  UserModel.findByIdAndUpdate(userData._id, { validation: {otp, expiry: expiresAt.toString(), isVerified: false } }, { new: true,runValidators:true }).session(session);
-    console.log(updatedUser)
 
     const jwtPayload = { email: userData.email, role: userData.role };
     const token = createToken(

@@ -2,6 +2,7 @@ import { Schema } from "mongoose";
 
 export type TPatient = {
     user: Schema.Types.ObjectId;
+    slug:string;
     dateOfBirth?: string;
     bloodGroup?: string;
     height?:string;

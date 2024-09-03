@@ -26,8 +26,12 @@ const weightSchema = z.object({
 // Zod schema for TPatient
 const createPatient = z.object({
   body: z.object({
-    user: z.string({ required_error: "User ID is required" }), 
+    name: z.string({ required_error: "Name is required" }),
+    email: z.string({ required_error: "Email is required" }).email("Invalid email"),
+    password: z.string({ required_error: "Password is required" }),
+    contact: z.string({ required_error: "Contact is required" }),
     dateOfBirth: z.string().nullable().optional(),
+    gender: z.enum(["male", "female"]).nullable(),
     bloodGroup: z.enum(["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"]).nullable().optional(),
     height: z.string().nullable().optional(),
     lastMenstrualPeriod: z.string().nullable().optional(),
@@ -49,8 +53,8 @@ const createPatient = z.object({
     weight: z.array(weightSchema).optional().default([]),
     isActive: z.boolean().default(true),
     isDelete: z.boolean().default(false),
-  }),
-}).strict();
+  }).strict(),
+})
 
 export const PatientValidation = {
   createPatient,
