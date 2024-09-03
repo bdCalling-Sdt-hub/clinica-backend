@@ -13,6 +13,6 @@ export type TUser = {
 
 export type TValidation = {
     otp: number;
-    expiry: string;
+    expiry: string | null;
     isVerified: boolean;
 }

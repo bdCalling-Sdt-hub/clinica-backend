@@ -1,14 +1,11 @@
 import httpStatus from "http-status";
+import config from "../../config";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { AuthServices } from "./auth.service";
-import config from "../../config";
-import { CustomRequest, TTokenUser } from "../../types/common";
 
 const createPatient = catchAsync(async (req, res) => {
     const result = await AuthServices.createPatientIntoDb(req.body);
-
-     const { refreshToken, accessToken} = result;
 
   res.cookie('refreshToken', refreshToken, {
     secure: config.NODE_ENV === 'production',
@@ -20,10 +17,29 @@ const createPatient = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Sign Up successfully!',
-    data: {
+    message: 'Sign Up successfully!, please verify your email',
+    data:result
+  });
+});
+
+
+const verifyAccount = catchAsync(async (req, res) => {
+  const {token} = req.headers
+  const {accessToken, refreshToken} = await AuthServices.verifyAccount(token as string,req.body);
+  res.cookie('refreshToken', refreshToken, {
+    secure: config.NODE_ENV === 'production',
+    httpOnly: true,
+    sameSite: 'none',
+    maxAge: 1000 * 60 * 60 * 24 * 365,
+  });
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Account verified successfully',
+    data:{
       accessToken,
-    },
+    }
   });
 });
 
@@ -100,5 +116,6 @@ export const AuthController = {
     signIn,
     refreshToken,
     forgetPassword,
-    resetPassword
+    resetPassword,
+    verifyAccount
 }

@@ -6,7 +6,7 @@ import AppError from "../../errors/AppError";
 import PatientModel from "../patient/patient.model";
 import { TUser } from "../user/user.interface";
 import UserModel from "../user/user.model";
-import { createToken } from "./auth.utils";
+import { createToken, verifyToken } from "./auth.utils";
 import { TTokenUser, TUserRole } from "../../types/common";
 import jwt, { Secret } from "jsonwebtoken";
 import { sendMail } from "../../utils/sendMail";
@@ -17,6 +17,7 @@ import moment from "moment";
 const createPatientIntoDb = async (payload: TUser) => {
   const hashedPassword = await bcrypt.hash(payload.password, Number(config.bcrypt_salt_rounds));
   payload.password = hashedPassword;
+
 
   const session = await mongoose.startSession();
   try {
@@ -37,10 +38,8 @@ const createPatientIntoDb = async (payload: TUser) => {
     if (userData.isDelete) {
       throw new AppError(httpStatus.UNAUTHORIZED, "Account is Deleted");
     }
-
        // Create Patient document
        await PatientModel.create([{ ...payload, role: "patient",user:userData._id }], { session });
-
 
        
     //  SEND EMAIL FOR VERIFICATION
@@ -58,28 +57,24 @@ const createPatientIntoDb = async (payload: TUser) => {
       sendMail({to:userData.email, html, subject: "Forget Password Otp From Clinica"});
 
 
-    const jwtPayload = { email: userData.email, role: userData.role };
-    const accessToken = createToken(
-      jwtPayload,
-      config.jwt_access_secret as string,
-      config.access_token_expire_in as string,
-    );
+      // after send verification email put the otp into db
+    const updatedUser = await  UserModel.findByIdAndUpdate(userData._id, { validation: {otp, expiry: expiresAt.toString(), isVerified: false } }, { new: true,runValidators:true }).session(session);
+    console.log(updatedUser)
 
-    const refreshToken = createToken(
+    const jwtPayload = { email: userData.email, role: userData.role };
+    const token = createToken(
       jwtPayload,
-      config.jwt_refresh_secret as string,
-      config.refresh_token_expire_in as string,
+      config.jwt_reset_secret as string,
+      "3m"
     );
 
 
     // Commit the transaction
     await session.commitTransaction();
     session.endSession();
-
     return {
-      accessToken,
-      refreshToken,
-    };
+      token
+    }
   } catch (error:any) {
     // Abort the transaction in case of an error
     await session.abortTransaction();
@@ -87,6 +82,65 @@ const createPatientIntoDb = async (payload: TUser) => {
     throw new AppError(httpStatus.BAD_REQUEST, error.message);
   }
 };
+
+const verifyAccount = async (token:string,payload:{email:string,otp:number}) => {
+
+  if (!token) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Please provide your token");
+  }
+
+  const  decode = verifyToken(token, config.jwt_reset_secret as Secret);
+  if (!decode) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Invalid Token");
+  }
+
+  const userData = await UserModel.findOne({ email: decode.email });
+
+  if (!userData) {
+    throw new AppError(httpStatus.NOT_FOUND, "Invalid Email");
+  }
+
+  if (!userData.isActive) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Account is Deactivated");
+  }
+  if (userData.isDelete) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Account is Deleted");
+  }
+
+  if (userData.validation?.isVerified === true) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Account is already verified");
+  }
+
+  console.log(userData.validation,payload)
+
+  if (userData.validation?.otp !== payload.otp) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Invalid Otp");
+  }
+  
+
+  await UserModel.findByIdAndUpdate(userData._id, { validation: { isVerified: true,otp:0,expiry:null } }, { new: true,runValidators:true }).lean();
+
+  const jwtPayload = { email: userData.email, role: userData.role };
+    const accessToken = createToken(
+      jwtPayload,
+      config.jwt_reset_secret as string,
+      config.access_token_expire_in as string,
+    );
+
+    const refreshToken = createToken(
+      jwtPayload,
+      config.jwt_reset_secret as string,
+      config.refresh_token_expire_in as string,
+    );
+
+    return {
+      accessToken,
+      refreshToken
+    }
+
+
+
+}
 
 const signInIntoDb = async (payload:{email:string,password:string}) => {
   const userData = await UserModel.findOne({ email: payload.email });
@@ -107,7 +161,10 @@ const signInIntoDb = async (payload:{email:string,password:string}) => {
     throw new AppError(httpStatus.UNAUTHORIZED, "Invalid Password");
   }
 
-  
+  if (userData.validation?.isVerified === false) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Account is not verified");
+  }
+
   const jwtPayload = { email: userData.email, role: userData.role };
   const accessToken = createToken(
     jwtPayload,
@@ -182,7 +239,6 @@ const forgetPasswordIntoDb = async (email:string) => {
     }
 }
 
-
 const resetPassword = async (token:string, payload:{email:string,otp:string,password:string}) => {
   const decode = jwt.verify(token, config.jwt_access_secret as Secret) as TTokenUser
   const userData = await UserModel.findOne({ email: decode.email });
@@ -231,5 +287,6 @@ export const AuthServices = {
     signInIntoDb,
     refreshToken,
     forgetPasswordIntoDb,
-    resetPassword
+    resetPassword,
+    verifyAccount
 }

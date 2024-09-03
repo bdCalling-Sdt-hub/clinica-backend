@@ -4,9 +4,7 @@ export type TPatient = {
     user: Schema.Types.ObjectId;
     dateOfBirth?: string;
     bloodGroup?: string;
-    role: string;
     height?:string;
-    weight?:string;
     lastMenstrualPeriod?: string;
     weightBeginningPregnancy?: string;
     pregnancyType?: 'single' | 'multiple'
@@ -14,16 +12,40 @@ export type TPatient = {
     profilePicture?:string;
     chronicHypertension?: boolean
     lupus?:boolean;
-    AntiphospholipidSyndrome?:boolean;
-    MotherPreeclampsiaHistory?:boolean;
+    antiphospholipidSyndrome?:boolean;
+    motherPreeclampsiaHistory?:boolean;
     firstPregnancy?:boolean;
     historyOfPreeclampsia?:boolean;
     babyBelow2500Grams?:boolean;
-    HigherRiskOfPreeclampsia?:boolean
+    higherRiskOfPreeclampsia?:boolean
+    gestationalAge?:number
+    bloodPressure?: TBloodPressure[];
+    glucose?: TGlucose[];
+    weight?: TWeight[];
     isActive: boolean;
     isDelete:boolean;
     createdAt: string;
     updatedAt: string;
+}
+
+export type TBloodPressure = {
+    date: string ;
+    time:string;
+    systolic: number;
+    diastolic: number;
+}
+
+export type TGlucose = {
+    date: string;
+    time: string;
+    label:string;
+    data:number;
+}
+
+export type TWeight = {
+    date: string;
+    time: string;
+    weight: number;
 }
 
 export type TGender = "male" | "female"
