@@ -15,7 +15,7 @@ const getPatients = catchAsync(async (req, res) => {
 })
 
 const getSinglePatient = catchAsync(async (req, res) => {
-    const result = await PatientServices.getSinglePatientFromDb(req.params.slug);
+    const result = await PatientServices.getSinglePatientFromDb(req.params.slug,req.query);
     sendResponse(req,res, {
         statusCode: httpStatus.OK,
         success: true,

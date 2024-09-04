@@ -1,4 +1,7 @@
+import httpStatus from "http-status";
 import QueryBuilder from "../../builder/QueryBuilder";
+import AppError from "../../errors/AppError";
+import { TTokenUser } from "../../types/common";
 import { TUser } from "./user.interface";
 import UserModel from "./user.model";
 
@@ -19,9 +22,29 @@ const updateUser = async (slug:string,payload:Partial<TUser>) => {
     return result
 }
 
+const deleteMyProfileFromDb = async (user:TTokenUser) => {
+
+    const userData = await UserModel.findOne({ email: user.email }).select("+password").lean();
+  if (!userData) {
+    throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
+  }
+  if (!userData.isActive) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
+  }
+  if (userData.isDelete) {
+    throw new AppError(httpStatus.BAD_REQUEST, "This Account already Deleted");
+  }
+  if (!userData.validation?.isVerified) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
+  }
+
+    await UserModel.findOneAndUpdate({_id:userData._id}, {isDelete:true});
+    return null
+}
 
 export const UserServices = {
     getAllUsersFromDb,
     getSingleUserFromDb,
-    updateUser
+    updateUser,
+    deleteMyProfileFromDb
 }

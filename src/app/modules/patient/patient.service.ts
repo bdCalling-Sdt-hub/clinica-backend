@@ -6,6 +6,10 @@ import UserModel from "../user/user.model";
 import PatientModel from "./patient.model";
 import { TPatient } from "./patient.interface";
 import { TUser } from "../user/user.interface";
+import { BloodPressureModel } from "../bloodPressure/bloodPressure.model";
+import { GlucoseModel } from "../glucose/glucose.model";
+import { WeightModel } from "../weight/weight.model";
+import { HealthRecordModel } from "../healthRecord/healthRecord.model";
 
 const getAllPatientsFromDb = async(query: Record<string, unknown>) => {
     const patientQuery = new QueryBuilder(PatientModel.find({isDelete:false,isActive:true}).populate("user"),query).search(["name"]).filter().sort().paginate().fields();
@@ -14,9 +18,37 @@ const getAllPatientsFromDb = async(query: Record<string, unknown>) => {
     return { meta, patients };
 }
 
-const getSinglePatientFromDb = async(slug:string) => {
-    const result = await PatientModel.findOne({slug,isDelete:false,isActive:true}).populate("user");
-    return result
+const getSinglePatientFromDb = async(slug:string, query: Record<string, unknown>) => {
+  const userData = await UserModel.findOne({ slug: slug }).lean();
+  if (!userData) {
+    throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
+  }
+  if (!userData.isActive) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
+  }
+  if (userData.isDelete) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
+  }
+  if (!userData.validation?.isVerified) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
+  }
+
+
+  let fields = query.fields ? (query.fields as string).replace(",", " ") : "-_v";
+    const patient = await PatientModel.findOne({slug}).populate("user").select(fields).lean();
+    const bloodPressure = await BloodPressureModel.find({user:userData?._id});
+    const glucose = await GlucoseModel.find({user:userData?._id});
+    const weight = await WeightModel.find({user:userData?._id});
+    const healthRecord = await HealthRecordModel.find({user:userData?._id});
+
+
+    return {
+      ...patient,
+      bloodPressure,
+      glucose,
+      weight,
+      healthRecord
+    }
 }
 
 const getPatientProfile = async(user:TTokenUser) => {

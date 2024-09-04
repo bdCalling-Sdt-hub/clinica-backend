@@ -33,10 +33,21 @@ const updateUser =catchAsync(async (req, res) => {
       });
 })
 
+const deleteMyProfile = catchAsync(async (req, res) => {
+    const result = await UserServices.deleteMyProfileFromDb((req as any).user);
+    sendResponse(req,res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Profile deleted successfully',
+        data:result
+      });
+})
+
 
 
 export const UserControllers = {
     getAllUser,
     getSingleUser,
-    updateUser
+    updateUser,
+    deleteMyProfile
 }

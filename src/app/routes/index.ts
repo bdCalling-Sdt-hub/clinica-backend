@@ -7,6 +7,7 @@ import { WeightRoutes } from "../modules/weight/weight.route";
 import { BloodPressureRoutes } from "../modules/bloodPressure/bloodPressure.route";
 import { GlucoseRoutes } from "../modules/glucose/glucose.route";
 import { HealthRecordRoutes } from "../modules/healthRecord/healthRecord.route";
+import { SettingsRoutes } from "../modules/settings/settings.route";
 
 const router = Router();
 
@@ -41,6 +42,10 @@ route: GlucoseRoutes
 {
     path:"/doctor",
     route: DoctorRoute
+},
+{
+    path:"/settings",
+    route: SettingsRoutes
 }
 ];
 
