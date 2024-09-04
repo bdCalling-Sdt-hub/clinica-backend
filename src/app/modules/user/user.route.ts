@@ -1,6 +1,7 @@
 import { Router } from "express";
 import auth from "../../middlewares/auth";
 import { UserControllers } from "./user.controller";
+import { uploadToS3 } from "../../constrant/s3";
 
 const router = Router()
 

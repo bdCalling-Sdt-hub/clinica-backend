@@ -8,6 +8,7 @@ const bloodPressureSchema = z.object({
     diastolic: z.number({ required_error: "Diastolic value is required" }),
 }).strict();
 
+
 // Zod schema for Glucose
 const glucoseSchema = z.object({
     date: z.string({ required_error: "Date is required" }),
@@ -23,6 +24,7 @@ const weightSchema = z.object({
     weight: z.number({ required_error: "Weight is required" }),
 }).strict();
 
+
 // Zod schema for TPatient
 const createPatient = z.object({
   body: z.object({
@@ -30,32 +32,39 @@ const createPatient = z.object({
     email: z.string({ required_error: "Email is required" }).email("Invalid email"),
     password: z.string({ required_error: "Password is required" }),
     contact: z.string({ required_error: "Contact is required" }),
-    dateOfBirth: z.string().nullable().optional(),
-    gender: z.enum(["male", "female"]).nullable(),
-    bloodGroup: z.enum(["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"]).nullable().optional(),
-    height: z.string().nullable().optional(),
-    lastMenstrualPeriod: z.string().nullable().optional(),
-    weightBeginningPregnancy: z.string().nullable().optional(),
-    pregnancyType: z.enum(["single", "multiple"]).default("single"),
-    vitroFertilization: z.boolean().optional().default(false),
-    profilePicture: z.string().nullable().optional(),
-    chronicHypertension: z.boolean().optional().default(false),
-    lupus: z.boolean().optional().default(false),
-    gestationalAge: z.string().nullable().optional(),
-    antiphospholipidSyndrome: z.boolean().optional().default(false),
-    motherPreeclampsiaHistory: z.boolean().optional().default(false),
-    firstPregnancy: z.boolean().optional().default(false),
-    historyOfPreeclampsia: z.boolean().optional().default(false),
-    babyBelow2500Grams: z.boolean().optional().default(false),
-    higherRiskOfPreeclampsia: z.boolean().optional().default(false),
-    bloodPressure: z.array(bloodPressureSchema).optional().default([]),
-    glucose: z.array(glucoseSchema).optional().default([]),
-    weight: z.array(weightSchema).optional().default([]),
-    isActive: z.boolean().default(true),
-    isDelete: z.boolean().default(false),
+    gender: z.enum(["male", "female"]),
   }).strict(),
 })
+const updatePatient = z.object({
+    name: z.string({ required_error: "Name is required" }),
+    email: z.string({ required_error: "Email is required" }).email("Invalid email"),
+    password: z.string({ required_error: "Password is required" }),
+    contact: z.string({ required_error: "Contact is required" }),
+    dateOfBirth: z.string(),
+    gender: z.enum(["male", "female"]),
+    bloodGroup: z.enum(["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"]),
+    height: z.string(),
+    profilePicture: z.string(),
+    lastMenstrualPeriod: z.string(),
+    weightBeginningPregnancy: z.string(),
+    pregnancyType: z.enum(["single", "multiple"]),
+    vitroFertilization: z.boolean(),
+    chronicHypertension: z.boolean(),
+    lupus: z.boolean(),
+    gestationalAge: z.string(),
+    antiphospholipidSyndrome: z.boolean(),
+    motherPreeclampsiaHistory: z.boolean(),
+    firstPregnancy: z.boolean(),
+    historyOfPreeclampsia: z.boolean(),
+    babyBelow2500Grams: z.boolean(),
+    higherRiskOfPreeclampsia: z.boolean(),
+    bloodPressure: z.array(bloodPressureSchema),
+    glucose: z.array(glucoseSchema),
+    weight: z.array(weightSchema),
+  }).partial().strict()
+
 
 export const PatientValidation = {
   createPatient,
+  updatePatient
 };

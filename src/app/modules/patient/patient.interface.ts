@@ -10,7 +10,6 @@ export type TPatient = {
     weightBeginningPregnancy?: string;
     pregnancyType?: 'single' | 'multiple'
     vitroFertilization?:boolean
-    profilePicture?:string;
     chronicHypertension?: boolean
     lupus?:boolean;
     antiphospholipidSyndrome?:boolean;
@@ -20,33 +19,13 @@ export type TPatient = {
     babyBelow2500Grams?:boolean;
     higherRiskOfPreeclampsia?:boolean
     gestationalAge?:number
-    bloodPressure?: TBloodPressure[];
-    glucose?: TGlucose[];
-    weight?: TWeight[];
+    bloodPressure?: Schema.Types.ObjectId;
+    glucose?: Schema.Types.ObjectId;
+    weight?:  Schema.Types.ObjectId;
     isActive: boolean;
     isDelete:boolean;
     createdAt: string;
     updatedAt: string;
-}
-
-export type TBloodPressure = {
-    date: string ;
-    time:string;
-    systolic: number;
-    diastolic: number;
-}
-
-export type TGlucose = {
-    date: string;
-    time: string;
-    label:string;
-    data:number;
-}
-
-export type TWeight = {
-    date: string;
-    time: string;
-    weight: number;
 }
 
 export type TGender = "male" | "female"

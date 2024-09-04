@@ -263,7 +263,6 @@ const refreshToken = async (refreshToken:string) => {
 
 const changePassword = async (user:TTokenUser,payload:{email:string,oldPassword:string,newPassword:string}) => {
   const userData = await UserModel.findOne({ email: user.email }).select("+password").lean();
-
   if (!userData) {
     throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
   }

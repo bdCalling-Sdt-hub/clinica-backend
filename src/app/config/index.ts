@@ -15,4 +15,10 @@ export default {
   jwt_reset_secret: process.env.JWT_RESET_SECRET,
   access_token_expire_in: process.env.JWT_ACCESS_TOKEN_EXPIRED_IN,
   refresh_token_expire_in: process.env.JWT_REFRESH_TOKEN_EXPIRED_IN,
+  aws:{
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    region: process.env.AWS_REGION,
+    bucket: process.env.AWS_BUCKET
+  }
 };

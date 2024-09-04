@@ -38,7 +38,7 @@ const getPatientProfile = catchAsync(async (req, res) => {
 
 const updatePatientProfile = catchAsync(async (req, res) => {
     const user = (req as CustomRequest).user
-    const result = await PatientServices.updatePatientProfile(user);
+    const result = await PatientServices.updatePatientProfile(user,req.body);
     sendResponse(req,res, {
         statusCode: httpStatus.OK,
         success: true,
@@ -48,10 +48,11 @@ const updatePatientProfile = catchAsync(async (req, res) => {
 })
 
 
+
 export const PatientController = {
     getPatients,
     getSinglePatient,
     getPatientProfile,
-    updatePatientProfile
+    updatePatientProfile,
 }
 

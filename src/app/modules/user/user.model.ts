@@ -12,6 +12,7 @@ const UserSchema = new Schema<TUser>({
     name: { type: String, required: true, unique:true },
     slug: { type: String, required: true, unique:true },
     email: { type: String, required: true, unique: true },
+    profilePicture: { type: String, default: null },
     password: { type: String, required: true,select:0 },
     role: { type: String, enum: ["admin", "patient", "doctor"],required:true },
     isActive: { type: Boolean, default: true },
