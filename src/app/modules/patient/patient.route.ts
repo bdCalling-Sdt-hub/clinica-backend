@@ -43,7 +43,6 @@ router.patch("/update-profile",
         } catch (error) {
             next(error)
         }
-       
     },
     PatientController.updatePatientProfile
 )
