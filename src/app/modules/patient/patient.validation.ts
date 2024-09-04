@@ -1,30 +1,5 @@
 import { z } from "zod";
 
-// Zod schema for Blood Pressure
-const bloodPressureSchema = z.object({
-    date: z.string({ required_error: "Date is required" }),
-    time: z.string({ required_error: "Time is required" }),
-    systolic: z.number({ required_error: "Systolic value is required" }),
-    diastolic: z.number({ required_error: "Diastolic value is required" }),
-}).strict();
-
-
-// Zod schema for Glucose
-const glucoseSchema = z.object({
-    date: z.string({ required_error: "Date is required" }),
-    time: z.string({ required_error: "Time is required" }),
-    label: z.string({ required_error: "Label is required" }),
-    data: z.number({ required_error: "Data value is required" }),
-}).strict();
-
-// Zod schema for Weight
-const weightSchema = z.object({
-    date: z.string({ required_error: "Date is required" }),
-    time: z.string({ required_error: "Time is required" }),
-    weight: z.number({ required_error: "Weight is required" }),
-}).strict();
-
-
 // Zod schema for TPatient
 const createPatient = z.object({
   body: z.object({
@@ -57,10 +32,7 @@ const updatePatient = z.object({
     firstPregnancy: z.boolean(),
     historyOfPreeclampsia: z.boolean(),
     babyBelow2500Grams: z.boolean(),
-    higherRiskOfPreeclampsia: z.boolean(),
-    bloodPressure: z.array(bloodPressureSchema),
-    glucose: z.array(glucoseSchema),
-    weight: z.array(weightSchema),
+    higherRiskOfPreeclampsia: z.boolean()
   }).partial().strict()
 
 

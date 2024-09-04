@@ -40,42 +40,7 @@ const updatePatientProfile = async(user:TTokenUser,payload:Partial<TPatient> & P
       if (!userData.validation?.isVerified) {
         throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
       }
-
-
-      const {bloodPressure,glucose,weight, ...updatedData} = payload
-
-      if (bloodPressure) {
-        for (const bp of bloodPressure) {
-            await PatientModel.findOneAndUpdate(
-                { user: userData._id, "bloodPressure.date": bp.date, "bloodPressure.time": bp.time },
-                { $set: { "bloodPressure.$": bp } }, // Update existing
-                { upsert: true, new: true, runValidators: true }
-            );
-        }
-    }
-
-    if (glucose) {
-        // Add or update glucose records
-        for (const glu of glucose) {
-            await PatientModel.findOneAndUpdate(
-                { user: userData._id, "glucose.date": glu.date, "glucose.time": glu.time },
-                { $set: { "glucose.$": glu } }, // Update existing
-                { upsert: true, new: true, runValidators: true }
-            );
-        }
-    }
-
-    if (weight) {
-        // Add or update weight records
-        for (const wt of weight) {
-            await PatientModel.findOneAndUpdate(
-                { user: userData._id, "weight.date": wt.date, "weight.time": wt.time },
-                { $set: { "weight.$": wt } }, // Update existing
-                { upsert: true, new: true, runValidators: true }
-            );
-        }
-    }
-        const result = await PatientModel.findById(userData?._id,payload,{new:true,runValidators:true});
+        const result = await PatientModel.findOneAndUpdate({user:userData._id},payload,{new:true,runValidators:true});
     return result  
 }
 
