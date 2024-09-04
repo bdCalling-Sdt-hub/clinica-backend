@@ -3,8 +3,8 @@ import { TUser, TValidation } from "./user.interface";
 
 
 const validationSchema = new Schema<TValidation>({
-    otp: { type: Number, default: 0 },
-    expiry: { type: String, default: null },
+    otp: { type: Number, default: 0 ,select:0},
+    expiry: { type: String, default: null,select:0 },
     isVerified: { type: Boolean, default: false },
 })
 
