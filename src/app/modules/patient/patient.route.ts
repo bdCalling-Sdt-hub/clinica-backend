@@ -49,4 +49,4 @@ router.patch("/update-profile",
 )
 
 
-export const PatientRoute = router
+export const PatientRoutes = router

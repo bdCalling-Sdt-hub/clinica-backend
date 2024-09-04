@@ -1,23 +1,33 @@
 import { Router } from "express";
-import { AuthRoute } from "../modules/auth/auth.route";
-import { PatientRoute } from "../modules/patient/patient.route";
+import { AuthRoutes } from "../modules/auth/auth.route";
+import { PatientRoutes } from "../modules/patient/patient.route";
 import { DoctorRoute } from "../modules/doctor/doctor.route";
 import { UserRoutes } from "../modules/user/user.route";
-import { WeightRoute } from "../modules/weight/weight.route";
+import { WeightRoutes } from "../modules/weight/weight.route";
+import { BloodPressureRoutes } from "../modules/bloodPressure/bloodPressure.route";
+import { GlucoseRoutes } from "../modules/glucose/glucose.route";
 
 const router = Router();
 
 const moduleRoutes = [
  { path:"/auth",
-    route: AuthRoute
+    route: AuthRoutes
 },
 {
     path:"/patient",
-    route: PatientRoute
+    route: PatientRoutes
 },
 {
     path:"/weight",
-    route: WeightRoute
+    route: WeightRoutes
+},
+{
+    path:"/blood-pressure",
+    route: BloodPressureRoutes
+},
+{
+path:"/glucose",
+route: GlucoseRoutes
 },
 {
     path:"/user",

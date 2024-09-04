@@ -1,12 +1,12 @@
 import { Router } from "express";
 import auth from "../../middlewares/auth";
-import { WeightController } from "./weight.conroller";
+import { WeightControllers } from "./weight.conroller";
 
 const router = Router()
 
-router.get("/get-weights", auth("patient"), WeightController.getWeights);
-router.post("/create", auth("patient"), WeightController.createUser);
+router.get("/get-weights", auth("patient"), WeightControllers.getWeights);
+router.post("/create", auth("patient"), WeightControllers.createWeight);
 
 
 
-export const WeightRoute = router
+export const WeightRoutes = router

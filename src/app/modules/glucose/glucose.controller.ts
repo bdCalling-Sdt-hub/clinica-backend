@@ -2,31 +2,31 @@ import httpStatus from "http-status";
 import { CustomRequest } from "../../types/common";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
-import { WeightServices } from "./weight.service";
+import { GlucoseServices } from "./glucose.service";
 
-const createWeight = catchAsync(async(req,res) => {
+const createGlucose = catchAsync(async(req,res) => {
     const user = (req as CustomRequest).user
-    const result = await WeightServices.createWeightIntoDb(user,req.body);
+    const result = await GlucoseServices.createGlucoseIntoDb(user,req.body);
     sendResponse(req,res,{
         statusCode: httpStatus.CREATED,
         success: true,
-        message: "Weight created successfully",
+        message: "Glucose created successfully",
         data: result
     })
 })
 
-const getWeights = catchAsync(async(req,res) => {
+const getGlucose = catchAsync(async(req,res) => {
     const user = (req as CustomRequest).user
-    const result = await WeightServices.getWeightsFromDb(user);
+    const result = await GlucoseServices.getGlucoseFromDb(user);
     sendResponse(req,res,{
         statusCode: httpStatus.OK,
         success: true,
-        message: "Weights fetched successfully",
+        message: "Glucose fetched successfully",
         data: result
     })
 })
 
-export const WeightControllers = {
-    createWeight,
-    getWeights
+export const GlucoseControllers = {
+    createGlucose,
+    getGlucose
 }
