@@ -1,18 +1,17 @@
 import { Router } from "express";
-import auth from "../../middlewares/auth";
-import { HealthRecordControllers } from "./healthRecord.controller";
+import httpStatus from "http-status";
 import multer, { memoryStorage } from "multer";
 import { uploadToS3 } from "../../constrant/s3";
-import { HealthRecordValidation } from "./healthRecord.validation";
 import AppError from "../../errors/AppError";
-import httpStatus from "http-status";
+import auth from "../../middlewares/auth";
+import { HealthRecordControllers } from "./healthRecord.controller";
 const storage = memoryStorage();
 const upload = multer({ storage });
 
 const router = Router();
 
-router.get("/health-record", auth("patient"), HealthRecordControllers.getHealthRecord);
-router.get("/upload", auth("patient"),
+router.get("/get-health-records", auth("patient"), HealthRecordControllers.getHealthRecord);
+router.post("/upload", auth("patient"),
 upload.single('file'),
     async(req,res,next ) => {
         try {
@@ -24,13 +23,15 @@ upload.single('file'),
                   file: req.file,
                   fileName: `health-records/${Math.floor(100000 + Math.random() * 900000)}`,
                 });
-                req.body = HealthRecordValidation.uploadHealthRecordValidation.parse({...JSON.parse(req?.body?.data),healthRecordFile})
+                req.body = {
+                  file:  healthRecordFile
+                }
             } 
         next()
         } catch (error) {
             next(error)
         }
     },
-HealthRecordControllers.getHealthRecord);
+HealthRecordControllers.uploadHealthRecord);
 
 export const HealthRecordRoutes = router

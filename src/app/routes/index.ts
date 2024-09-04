@@ -6,6 +6,7 @@ import { UserRoutes } from "../modules/user/user.route";
 import { WeightRoutes } from "../modules/weight/weight.route";
 import { BloodPressureRoutes } from "../modules/bloodPressure/bloodPressure.route";
 import { GlucoseRoutes } from "../modules/glucose/glucose.route";
+import { HealthRecordRoutes } from "../modules/healthRecord/healthRecord.route";
 
 const router = Router();
 
@@ -28,6 +29,10 @@ const moduleRoutes = [
 {
 path:"/glucose",
 route: GlucoseRoutes
+},
+{
+    path:"/health-record",
+    route: HealthRecordRoutes
 },
 {
     path:"/user",

@@ -6,7 +6,8 @@ import { CustomRequest } from "../../types/common";
 
 const uploadHealthRecord = catchAsync(async (req, res) => {
     const user = (req as CustomRequest).user
-    const result = await HealthRecordServices.uploadHealthRecordIntoDb(user);
+    console.log(req.body,"body")
+    const result = await HealthRecordServices.uploadHealthRecordIntoDb(user,req.body);
     sendResponse(req,res, {
         statusCode: httpStatus.OK,
         success: true,
