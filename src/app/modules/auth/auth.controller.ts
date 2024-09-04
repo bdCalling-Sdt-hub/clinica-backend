@@ -4,6 +4,7 @@ import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { AuthServices } from "./auth.service";
 import { Request, Response } from "express";
+import { CustomRequest, TTokenUser } from "../../types/common";
 
 const createPatient = catchAsync(async (req: Request, res: Response) => {
   const result = await AuthServices.createPatientIntoDb(req.body);
@@ -82,6 +83,18 @@ const refreshToken = catchAsync(async (req, res) => {
     }) 
 });
 
+
+const changePassword = catchAsync(async (req, res) => {
+  const user = (req as CustomRequest).user
+  const result = await AuthServices.changePassword(user,req.body);
+  sendResponse(req,res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Password changed successfully',
+    data:result
+  });
+})
+
 const forgetPassword = catchAsync(async (req, res) => {
   const email = req.body.email
   const result = await AuthServices.forgetPasswordIntoDb(email);
@@ -124,4 +137,5 @@ export const AuthController = {
     resetPassword,
     verifyAccount,
     resendOtp,
+    changePassword
 }

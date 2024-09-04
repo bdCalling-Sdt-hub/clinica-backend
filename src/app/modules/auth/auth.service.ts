@@ -238,7 +238,7 @@ const refreshToken = async (refreshToken:string) => {
 
   const userData = await UserModel.findOne({ email: payload.email }).select("+password").lean();
   if (!userData) {
-    throw new AppError(httpStatus.NOT_FOUND, "Invalid Email");
+    throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
   }
   if (!userData.isActive) {
     throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
@@ -259,6 +259,32 @@ const refreshToken = async (refreshToken:string) => {
   return {
     accessToken
   }
+}
+
+const changePassword = async (user:TTokenUser,payload:{email:string,oldPassword:string,newPassword:string}) => {
+  const userData = await UserModel.findOne({ email: user.email }).select("+password").lean();
+
+  if (!userData) {
+    throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
+  }
+  if (!userData.isActive) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
+  }
+  if (userData.isDelete) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
+  }
+  if (!userData.validation?.isVerified) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
+  }
+
+  const isMatch = await bcrypt.compare(payload.oldPassword, userData.password);
+  if (!isMatch) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid Old Password");
+  }
+
+  const newPassword = await bcrypt.hash(payload.newPassword, Number(config.bcrypt_salt_rounds));
+  await UserModel.findOneAndUpdate({email:userData.email}, {password:newPassword})
+  return null;
 }
 
 const forgetPasswordIntoDb = async (email:string) => {
@@ -342,6 +368,7 @@ const resetPassword = async (token:string, payload:{email:string,otp:string,pass
 
 
 
+
 export const AuthServices = {
     createPatientIntoDb,
     signInIntoDb,
@@ -349,5 +376,6 @@ export const AuthServices = {
     forgetPasswordIntoDb,
     resetPassword,
     verifyAccount,
-    resendOtp
+    resendOtp,
+    changePassword
 }

@@ -9,6 +9,7 @@ const router = Router();
 router.get("/refresh-token", AuthController.refreshToken);
 router.post("/sign-up", validateRequest(PatientValidation.createPatient),AuthController.createPatient);
 router.post("/sign-in", validateRequest(AuthValidations.signInValidation),AuthController.signIn);
+router.patch("/change-password", auth(), validateRequest(AuthValidations.changePasswordValidation), AuthController.changePassword);
 router.post("/forget-password", validateRequest(AuthValidations.forgetPasswordValidation), AuthController.forgetPassword);
 router.post("/reset-password", AuthController.resetPassword);
 router.post("/verify-account", validateRequest(AuthValidations.optValidation), AuthController.verifyAccount);
