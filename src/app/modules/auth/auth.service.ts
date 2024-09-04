@@ -51,7 +51,7 @@ const createPatientIntoDb = async (payload: TUser) => {
     const expiresAt = moment(currentTime).add(3, 'minute');
 
     await UserModel.findOneAndUpdate({email:userData.email}, {validation:{isVerified:false,otp,expiry:expiresAt.toString()}})
-    const parentMailTemplate = path.join(process.cwd(), "/src/template/email.html");
+    const parentMailTemplate = path.join(process.cwd(), "/src/template/verify.html");
     const forgetOtpEmail = fs.readFileSync(parentMailTemplate, "utf-8");
     const html = forgetOtpEmail
       .replace(/{{name}}/g, userData.name)

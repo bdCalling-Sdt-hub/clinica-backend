@@ -20,8 +20,7 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
     },
   ];
 
-  const language = req.headers?.['accept-language']
-  console.log(req.t("Unauthorized"))
+  // const language = req.headers?.['accept-language']
 
   if (error instanceof ZodError) {
     const simplifiedError = handleZodError(error);
@@ -62,10 +61,9 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
     ];
   }
 
-
   return res.status(statusCode).json({
     success: false,
-    message:req.t(message),
+    message:  req.t(message),
     errorSources,
     stack: config.NODE_ENV === "development" ? error?.stack : null,
   });

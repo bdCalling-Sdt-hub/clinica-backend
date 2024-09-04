@@ -15,10 +15,11 @@ type TResponse<T> = {
   meta?: TMeta;
 };
 
+
 const sendResponse = <T>(req: Request, res: Response, data: TResponse<T>) => {
   res.status(data?.statusCode).json({
-    success: data?.success,
-    message:data.message,
+    success: true,
+    message: req.t(data?.message!),
     meta: data?.meta,
     data: data?.data,
   });
