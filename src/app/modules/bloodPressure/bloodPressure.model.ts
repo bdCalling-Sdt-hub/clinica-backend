@@ -2,6 +2,7 @@ import { model, Schema } from "mongoose";
 import { TBloodPressure } from "./bloodPressure.interface";
 
 const bloodPressureSchema = new Schema({
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     date: { type: String, required: true },
     time: { type: String, required: true },
     systolic: { type: Number, required: true },

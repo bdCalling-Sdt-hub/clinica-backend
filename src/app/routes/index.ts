@@ -3,6 +3,7 @@ import { AuthRoute } from "../modules/auth/auth.route";
 import { PatientRoute } from "../modules/patient/patient.route";
 import { DoctorRoute } from "../modules/doctor/doctor.route";
 import { UserRoutes } from "../modules/user/user.route";
+import { WeightRoute } from "../modules/weight/weight.route";
 
 const router = Router();
 
@@ -13,6 +14,10 @@ const moduleRoutes = [
 {
     path:"/patient",
     route: PatientRoute
+},
+{
+    path:"/weight",
+    route: WeightRoute
 },
 {
     path:"/user",
