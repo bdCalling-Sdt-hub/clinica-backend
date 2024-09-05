@@ -17,7 +17,7 @@ const createBloodPressure = catchAsync(async(req,res) => {
 
 const getBloodPressures = catchAsync(async(req,res) => {
     const user = (req as CustomRequest).user
-    const result = await BloodPressureServices.getBloodPressuresFromDb(user);
+    const result = await BloodPressureServices.getBloodPressuresFromDb(user,req.query);
     sendResponse(req,res,{
         statusCode: httpStatus.OK,
         success: true,
