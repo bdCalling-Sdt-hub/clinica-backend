@@ -13,6 +13,7 @@ export default {
   jwt_access_secret: process.env.JWT_ACCESS_SECRET,
   jwt_refresh_secret: process.env.JWT_REFRESH_SECRET,
   jwt_reset_secret: process.env.JWT_RESET_SECRET,
+  jwt_reset_token_expire_in: process.env.JWT_RESET_TOKEN_EXPIRED_IN,
   access_token_expire_in: process.env.JWT_ACCESS_TOKEN_EXPIRED_IN,
   refresh_token_expire_in: process.env.JWT_REFRESH_TOKEN_EXPIRED_IN,
   aws:{

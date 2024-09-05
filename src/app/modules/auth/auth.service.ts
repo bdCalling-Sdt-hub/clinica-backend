@@ -66,14 +66,15 @@ const createPatientIntoDb = async (payload: TUser) => {
     const token = createToken(
       jwtPayload,
       config.jwt_reset_secret as string,
-      "3m"
+      config.jwt_reset_token_expire_in as string
     );
 
     // Commit the transaction
     await session.commitTransaction();
     session.endSession();
     return {
-      token
+      token,
+      email:userData.email
     }
   } catch (error:any) {
     // Abort the transaction in case of an error
@@ -94,7 +95,7 @@ const verifyAccount = async (token:string,payload:{email:string,otp:number}) => 
     throw new AppError(httpStatus.UNAUTHORIZED, "Invalid Token");
   }
 
-  const userData = await UserModel.findOne({ email: decode.email });
+  const userData = await UserModel.findOne({ email: decode.email }).select("+validation.otp");
 
   if (!userData) {
     throw new AppError(httpStatus.NOT_FOUND, "Invalid Email");
@@ -111,7 +112,9 @@ const verifyAccount = async (token:string,payload:{email:string,otp:number}) => 
     throw new AppError(httpStatus.BAD_REQUEST, "Account is already verified");
   }
 
-  console.log(userData.validation,payload)
+  console.log(userData)
+
+  console.log(payload.otp,userData.validation?.otp)
 
   if (userData.validation?.otp !== payload.otp) {
     throw new AppError(httpStatus.UNAUTHORIZED, "Invalid Otp");
@@ -123,13 +126,13 @@ const verifyAccount = async (token:string,payload:{email:string,otp:number}) => 
   const jwtPayload = { email: userData.email, role: userData.role };
     const accessToken = createToken(
       jwtPayload,
-      config.jwt_reset_secret as string,
+      config.jwt_access_secret as string,
       config.access_token_expire_in as string,
     );
 
     const refreshToken = createToken(
       jwtPayload,
-      config.jwt_reset_secret as string,
+      config.jwt_refresh_secret as string,
       config.refresh_token_expire_in as string,
     );
 
@@ -137,9 +140,6 @@ const verifyAccount = async (token:string,payload:{email:string,otp:number}) => 
       accessToken,
       refreshToken
     }
-
-
-
 }
 
 const resendOtp = async (payload:{email:string}) => {
@@ -163,7 +163,6 @@ const resendOtp = async (payload:{email:string}) => {
   // generate token
   const expiresAt = moment(currentTime).add(3, 'minute');
 
-
   await UserModel.findOneAndUpdate({email:userData.email}, {validation:{isVerified:false,otp,expiry:expiresAt.toString()}})
   const parentMailTemplate = path.join(process.cwd(), "/src/template/email.html");
   const forgetOtpEmail = fs.readFileSync(parentMailTemplate, "utf-8");
@@ -174,17 +173,18 @@ const resendOtp = async (payload:{email:string}) => {
 
 
     // after send verification email put the otp into db
-  const updatedUser = await  UserModel.findByIdAndUpdate(userData._id, { validation: {otp, expiry: expiresAt.toString(), isVerified: false } }, { new: true,runValidators:true });
+   await  UserModel.findByIdAndUpdate(userData._id, { validation: {otp, expiry: expiresAt.toString(), isVerified: false } }, { new: true,runValidators:true });
 
   const jwtPayload = { email: userData.email, role: userData.role };
   const token = createToken(
     jwtPayload,
     config.jwt_reset_secret as string,
-    "3m"
+    config.jwt_reset_token_expire_in as string
   );
-return {
-  token
-}
+  return {
+    token,
+    email:userData.email
+  }
 }
 
 const signInIntoDb = async (payload:{email:string,password:string}) => {
@@ -227,7 +227,6 @@ const signInIntoDb = async (payload:{email:string,password:string}) => {
     refreshToken,
   };
 }
-
 
 const refreshToken = async (refreshToken:string) => {
 

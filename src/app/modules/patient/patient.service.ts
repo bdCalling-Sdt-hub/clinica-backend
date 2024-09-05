@@ -12,7 +12,7 @@ import { WeightModel } from "../weight/weight.model";
 import { HealthRecordModel } from "../healthRecord/healthRecord.model";
 
 const getAllPatientsFromDb = async(query: Record<string, unknown>) => {
-    const patientQuery = new QueryBuilder(PatientModel.find({isDelete:false,isActive:true}).populate("user"),query).search(["name"]).filter().sort().paginate().fields();
+    const patientQuery = new QueryBuilder(PatientModel.find({isDelete:false,isActive:true}).populate("user"),query).search(["dateOfBirth","bloodGroup"]).filter().sort().paginate().fields();
     const meta = await patientQuery.countTotal();
     const patients = await patientQuery.modelQuery;
     return { meta, patients };
@@ -34,13 +34,12 @@ const getSinglePatientFromDb = async(slug:string, query: Record<string, unknown>
   }
 
 
-  let fields = query.fields ? (query.fields as string).replace(",", " ") : "-_v";
+  let fields = query.fields ? (query.fields as string).replace(",", " ") : "-__v";
     const patient = await PatientModel.findOne({slug}).populate("user").select(fields).lean();
     const bloodPressure = await BloodPressureModel.find({user:userData?._id});
     const glucose = await GlucoseModel.find({user:userData?._id});
     const weight = await WeightModel.find({user:userData?._id});
     const healthRecord = await HealthRecordModel.find({user:userData?._id});
-
 
     return {
       ...patient,
@@ -75,10 +74,6 @@ const updatePatientProfile = async(user:TTokenUser,payload:Partial<TPatient> & P
         const result = await PatientModel.findOneAndUpdate({user:userData._id},payload,{new:true,runValidators:true});
     return result  
 }
-
-
-
-
 export const PatientServices = {
     getAllPatientsFromDb,
     getSinglePatientFromDb,

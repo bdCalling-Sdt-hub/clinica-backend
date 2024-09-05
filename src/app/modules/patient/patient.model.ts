@@ -21,8 +21,6 @@ const PatientSchema = new Schema<TPatient>({
     historyOfPreeclampsia: { type: Boolean, default: false },
     babyBelow2500Grams: { type: Boolean, default: false },
     higherRiskOfPreeclampsia: { type: Boolean, default: false },
-    isActive: { type: Boolean, default: true },
-    isDelete: { type: Boolean, default: false },
 }, {
     timestamps: true, 
 });

@@ -6,7 +6,7 @@ import { DoctorValidations } from "./doctor.validation";
 
 const router = Router();
 
-router.get("/doctors", auth("admin"), DoctorControllers.getDoctors);
+router.get("/doctor-list", auth("admin"), DoctorControllers.getDoctors);
 router.get("/:slug", auth("admin"), DoctorControllers.getSingleDoctor);
 router.post("/create", auth("admin"),validateRequest(DoctorValidations.createDoctorValidation), DoctorControllers.createDoctor);
 router.get("/profile")

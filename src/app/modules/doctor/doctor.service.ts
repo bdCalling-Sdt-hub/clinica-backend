@@ -14,7 +14,6 @@ import { sendMail } from "../../utils/sendMail";
 import { createToken } from "../auth/auth.utils";
 
 const createDoctorFromDb = async (payload: TDoctor) => {
-
     const hashedPassword = await bcrypt.hash(payload.password, Number(config.bcrypt_salt_rounds));
     payload.password = hashedPassword;
     const slug = generateSlug(payload.name)
@@ -49,18 +48,16 @@ const createDoctorFromDb = async (payload: TDoctor) => {
       // generate token
       const expiresAt = moment(currentTime).add(3, 'minute');
   
-      await UserModel.findOneAndUpdate({email:userData.email}, {validation:{isVerified:false,otp,expiry:expiresAt.toString()}})
+      await UserModel.findOneAndUpdate({email:userData.email}, {validation:{isVerified:false,otp,expiry:expiresAt.toString()}},{session})
       const parentMailTemplate = path.join(process.cwd(), "/src/template/verify.html");
       const forgetOtpEmail = fs.readFileSync(parentMailTemplate, "utf-8");
       const html = forgetOtpEmail
         .replace(/{{name}}/g, userData.name)
         .replace(/{{otp}}/g, otp.toString());
-        sendMail({to:userData.email, html, subject: "Forget Password Otp From Clinica"});
+        sendMail({to:userData.email, html, subject: "Verify Your Account From Clinica"});
   
   
         // after send verification email put the otp into db
-      const updatedUser = await  UserModel.findByIdAndUpdate(userData._id, { validation: {otp, expiry: expiresAt.toString(), isVerified: false } }, { new: true,runValidators:true }).session(session);
-  
       const jwtPayload = { email: userData.email, role: userData.role };
       const token = createToken(
         jwtPayload,
@@ -83,7 +80,7 @@ const createDoctorFromDb = async (payload: TDoctor) => {
 };
 
 const getDoctors = async () => {
-    const doctors = await DoctorModel.find();
+    const doctors = await DoctorModel.find().populate("user");
     return doctors;
 };
 
