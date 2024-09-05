@@ -90,7 +90,8 @@ const deleteMyAccountFromDb = async(user:TTokenUser) => {
       if (!userData.validation?.isVerified) {
         throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
       }
-        const result = await UserModel.findOneAndUpdate({user:userData._id},{isDelete:true},{new:true,runValidators:true});
+      const result = await UserModel.findOneAndUpdate({_id:userData._id,role:user.role},{isDelete:true},{new:true,runValidators:true});
+      console.log(result,"result")
     return result  
 }
 
