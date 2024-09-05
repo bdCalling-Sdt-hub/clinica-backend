@@ -1,11 +1,10 @@
 import httpStatus from "http-status";
+import QueryBuilder from "../../builder/QueryBuilder";
 import AppError from "../../errors/AppError";
 import { TTokenUser } from "../../types/common";
-import PatientModel from "../patient/patient.model";
 import UserModel from "../user/user.model";
-import { TConnection, TConnectionStatus } from "./connection.interface";
+import { TConnectionStatus } from "./connection.interface";
 import ConnectionModel from "./connection.model";
-import QueryBuilder from "../../builder/QueryBuilder";
 
 const createConnectionIntoDb = async (user:TTokenUser, payload: {doctorId:string}) => {
     const userData = await UserModel.findOne({ email: user.email,role:"patient" }).lean();
@@ -76,25 +75,31 @@ const getMyConnectionRequest = async (user:TTokenUser, query:Record<string,unkno
     return result;
 }
 
-const updateConnectionStatusIntoDb = async (user:TTokenUser, payload: {connectionId:string, status: TConnectionStatus}) => {
-    const userData = await UserModel.findOne({ email: user.email,role:"patient" }).lean();
+const updateConnectionStatusIntoDb = async (user:TTokenUser, connectionId:string, payload: {status: TConnectionStatus}) => {
+    const userData = await UserModel.findOne({ email: user.email,role:"doctor" }).lean();
     if (!userData) {
         throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
     }
+
     if (userData.isDelete) {
         throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
-    } 
+    }
+
     if (!userData.isActive) {
         throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
     }
 
     const result = await ConnectionModel.findOneAndUpdate({
-        _id: payload.connectionId,
+        _id: connectionId,
         doctor: userData._id
     }
     , {
         status: payload.status
-    });
+    },
+{
+    new:true,
+    runValidators:true
+});
     return result;
 }
 

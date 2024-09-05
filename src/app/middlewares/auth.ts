@@ -24,6 +24,7 @@ const auth = (...requiredRole: TUserRole[]) => {
       throw new AppError(httpStatus.UNAUTHORIZED, "Session Expired");
     }
 
+
     const { role, email, iat } = decode;
     // CHECK USER EXIST OR NOT
     const userData = await UserModel.findOne({ email, isActive: true, isDelete: false });

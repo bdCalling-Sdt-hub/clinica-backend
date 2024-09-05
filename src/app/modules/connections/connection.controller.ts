@@ -41,7 +41,7 @@ const getConnection = catchAsync(async (req, res) => {
 
 const updateConnection = catchAsync(async (req, res) => {
     const user = (req as CustomRequest).user;
-    const result = await ConnectionServices.updateConnectionStatusIntoDb(user, req.body);
+    const result = await ConnectionServices.updateConnectionStatusIntoDb(user, req.params.connectionId, req.body);
     sendResponse(req, res, {
         statusCode: httpStatus.OK,
         success: true,

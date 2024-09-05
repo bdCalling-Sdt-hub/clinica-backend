@@ -5,12 +5,12 @@ const connectionSchema = new Schema<TConnection>(
     {
         patient: {
             type: Schema.Types.ObjectId,
-            ref: "Patient",
+            ref: "User",
             required: true,
         },
         doctor: {
             type: Schema.Types.ObjectId,
-            ref: "Doctor",
+            ref: "User",
             required: true,
         },
         status: {

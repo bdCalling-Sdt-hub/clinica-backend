@@ -2,8 +2,7 @@ import { z } from "zod";
 
 const createConnectionValidation = {
     body: z.object({
-        patient: z.string({ required_error: "Patient is required" }),
-        doctor: z.string({ required_error: "Doctor is required" }),
+        doctorId: z.string({ required_error: "Doctor Id is required" }),
     })
 }
 
