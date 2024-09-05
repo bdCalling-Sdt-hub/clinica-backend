@@ -27,7 +27,7 @@ router.get("/:slug",
 
 
 router.patch("/update-profile", 
-    auth("admin","doctor","patient"),
+    auth("patient"),
     upload.single('profilePicture'),
     async(req,res,next ) => {
         try {

@@ -14,9 +14,8 @@ const createDoctor = catchAsync(async (req, res) => {
     });
 })
 
-
 const getDoctors = catchAsync(async (req, res) => {
-    const doctors = await DoctorServices.getDoctorsFromDb();
+    const doctors = await DoctorServices.getDoctorsFromDb(req.query);
     sendResponse(req,res, {
         statusCode: httpStatus.OK,
         success: true,
@@ -47,7 +46,8 @@ const getProfile = catchAsync(async (req, res) => {
 })
 
 const updateDoctor = catchAsync(async (req, res) => {
-    const doctor = await DoctorServices.updateDoctorIntoDb(req.params.doctorId, req.body);
+    const user = (req as CustomRequest).user
+    const doctor = await DoctorServices.updateDoctorIntoDb(user, req.body);
     sendResponse(req,res, {
         statusCode: httpStatus.OK,
         success: true,

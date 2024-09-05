@@ -15,9 +15,9 @@ const createDoctorValidation = z.object({
 })
 
 const updateDoctorValidation = z.object({
-    body:z.object({
         name: z.string({required_error:"Name is required"}),
         email: z.string({required_error:"Email is required"}).email({ message: "Invalid email address" }),
+        profilePicture: z.string(),
         password: z.string({required_error:"Password is required"}),
         contact: z.string({required_error:"Contact is required"}),
         experience: z.string({required_error:"Experience is required"}),
@@ -25,8 +25,7 @@ const updateDoctorValidation = z.object({
         title: z.string({required_error:"Title is required"}),
         gender: z.enum(["male", "female"],{required_error:"Gender is required"}),
         about: z.string().optional(),
-    }).partial().strict()
-})
+}).partial().strict()
 
 const doctorActionFromAdminValidation = z.object({
     body:z.object({

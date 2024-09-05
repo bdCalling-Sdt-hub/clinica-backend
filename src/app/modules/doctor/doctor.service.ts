@@ -14,9 +14,9 @@ import { sendMail } from "../../utils/sendMail";
 import { createToken } from "../auth/auth.utils";
 import { TUser } from "../user/user.interface";
 import { TTokenUser } from "../../types/common";
+import QueryBuilder from "../../builder/QueryBuilder";
 
 const createDoctorFromDb = async (payload: TDoctor & TUser) => {
-  console.log({payload})
     const hashedPassword = await bcrypt.hash(payload.password, Number(config.bcrypt_salt_rounds));
     payload.password = hashedPassword;
     const slug = generateSlug(payload.name)
@@ -78,9 +78,12 @@ const createDoctorFromDb = async (payload: TDoctor & TUser) => {
     }
 };
 
-const getDoctorsFromDb = async () => {
-    const doctors = await DoctorModel.find().populate("user");
-    return doctors;
+const getDoctorsFromDb = async (query:Record<string,unknown>) => {
+  const doctorQuery = new QueryBuilder(DoctorModel.find().populate("user"),query).search(["slug" , "title", "experience", "address", "about"]).filter().sort().paginate().fields();
+    const result = await doctorQuery.modelQuery;
+    const meta = await doctorQuery.countTotal();
+
+    return { meta,data: result,  };
 };
 
 
@@ -94,14 +97,60 @@ const getProfileFromDb = async () => {
     return profile;
 };
 
-const updateDoctorIntoDb = async (slug: string, payload: Partial<TDoctor>) => {
-  const updatedData:Record<string,unknown> = {}
-  if (payload.isActive !== undefined) updatedData.isActive = payload.isActive;
-  if (payload.isDelete !== undefined) updatedData.isDelete = payload.isDelete;
-    const updatedDoctor = await DoctorModel.findOneAndUpdate({slug}, updatedData, {
-        new: true,
-    });
-    return updatedDoctor;
+const updateDoctorIntoDb = async (user: TTokenUser, payload: Partial<TDoctor> & Partial<TUser> ) => {
+
+
+  const userUpdatedData:Partial<TUser> = {} 
+
+  const {
+    name,
+    email,
+    profilePicture,
+    contact,
+    password,
+    role,
+    gender, ...patientUpdatedData } = payload;
+    if (name) {
+      const slug = generateSlug(name);
+      userUpdatedData.name = name
+      userUpdatedData.slug = slug
+      patientUpdatedData.slug = slug
+    };
+    if (email) userUpdatedData.email = email;
+    if (profilePicture) userUpdatedData.profilePicture = profilePicture;
+    if (contact) userUpdatedData.contact = contact;
+    if (role) userUpdatedData.role = role;
+    if (gender) userUpdatedData.gender = gender;
+
+    const userData = await UserModel.findOne({user:user._id});
+    if (!userData) {
+        throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
+      }
+      if (!userData.isActive) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
+      }
+      if (userData.isDelete) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
+      }
+      if (!userData.validation?.isVerified) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
+      }
+      const session = await mongoose.startSession();
+      try {
+        session.startTransaction();
+        await UserModel.findOneAndUpdate({user:user._id},userUpdatedData,{session});
+        await DoctorModel.findOneAndUpdate({user:userData._id},patientUpdatedData,{session});
+        await session.commitTransaction();
+        session.endSession();
+        return {
+          ...patientUpdatedData,
+          user:userUpdatedData
+        }
+      } catch (error:any) {
+        await session.abortTransaction();
+        session.endSession();
+        throw new AppError(httpStatus.BAD_REQUEST, error.message);
+      }
 };
 
 const doctorActionFromAdmin = async (slug: string, payload: { isDelete?: boolean, isActive?: boolean }) => {

@@ -80,7 +80,6 @@ const updatePatientProfileIntoDb = async(user:TTokenUser,payload:Partial<TPatien
     if (email) userUpdatedData.email = email;
     if (profilePicture) userUpdatedData.profilePicture = profilePicture;
     if (contact) userUpdatedData.contact = contact;
-    if (password) userUpdatedData.password = password;
     if (role) userUpdatedData.role = role;
     if (gender) userUpdatedData.gender = gender;
 
@@ -114,13 +113,10 @@ const updatePatientProfileIntoDb = async(user:TTokenUser,payload:Partial<TPatien
         throw new AppError(httpStatus.BAD_REQUEST, error.message);
       }
     }
-
 const patientActionForAdmin = async(slug:string,payload:{isDelete?:boolean,isActive?:boolean}) => {
-
   const updatedData:Record<string,unknown> = {}
   if (payload.isActive !== undefined) updatedData.isActive = payload.isActive;
   if (payload.isDelete !== undefined) updatedData.isDelete = payload.isDelete;
-
     const userData = await UserModel.findOne({slug:slug});
     if (!userData) {
         throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
