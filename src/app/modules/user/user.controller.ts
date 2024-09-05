@@ -44,10 +44,24 @@ const deleteMyProfile = catchAsync(async (req, res) => {
 })
 
 
+const getUsersCount =catchAsync(async (req, res) => {
+    const result = await UserServices.getUsersCount();
+    sendResponse(req,res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Users count fetched successfully',
+        data:result
+      });
+})
+
+
+
+
 
 export const UserControllers = {
     getAllUser,
     getSingleUser,
     updateUser,
-    deleteMyProfile
+    deleteMyProfile,
+    getUsersCount
 }

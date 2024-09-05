@@ -20,6 +20,8 @@ const UserSchema = new Schema<TUser>({
     isActive: { type: Boolean, default: true },
     isDelete: { type: Boolean, default: false },
     validation: {type:validationSchema}
+},{
+    timestamps: true
 });
 
 

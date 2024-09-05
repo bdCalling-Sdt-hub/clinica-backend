@@ -42,9 +42,67 @@ const deleteMyProfileFromDb = async (user:TTokenUser) => {
     return null
 }
 
+
+const getUsersCount = async () => {
+  const months = [
+    "January", "February", "March", "April", "May", "June", 
+    "July", "August", "September", "October", "November", "December"
+  ];
+
+  const currentYear = new Date().getFullYear();
+
+  const userCounts = await UserModel.aggregate([
+    {
+      // Match users created in the current year
+      $match: {
+        createdAt: {
+          $gte: new Date(`${currentYear}-01-01`), // Start of the current year
+          $lt: new Date(`${currentYear + 1}-01-01`) // Start of the next year
+        }
+      }
+    },
+    {
+      // Group by month and count users
+      $group: {
+        _id: { $month: "$createdAt" }, // Group by the month part of the date
+        count: { $sum: 1 }
+      }
+    },
+    {
+      $project: {
+        _id: 0, // Remove _id field
+        month: "$_id", // Rename _id to monthIndex
+        count: 1
+      }
+    }
+  ]);
+
+  console.log(userCounts,"users count");
+
+  // Map the result to include the month names
+  const result = userCounts.map(({ monthIndex, count }) => ({
+    month: months[monthIndex - 1], // Convert monthIndex (1-based) to month name
+    count
+  }));
+
+  // Ensure all months are accounted for, filling in with 0 for months without data
+  const allMonths = months.map((month, index) => {
+    const found = result.find(item => {
+      return item.month === month;
+    });
+    
+    return found ? found : { month, count: 0 };
+  });
+
+  return allMonths;
+};
+
+
+
 export const UserServices = {
     getAllUsersFromDb,
     getSingleUserFromDb,
     updateUser,
-    deleteMyProfileFromDb
+    deleteMyProfileFromDb,
+    getUsersCount
 }
