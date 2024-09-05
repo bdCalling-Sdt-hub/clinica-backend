@@ -1,11 +1,11 @@
 import { TGender } from "../patient/patient.interface";
 
 export type TUser = {
-
     name: string;
     slug: string;
     email: string;
     profilePicture:string | null
+    contact: string;
     password: string;
     role: string;
     gender: TGender;

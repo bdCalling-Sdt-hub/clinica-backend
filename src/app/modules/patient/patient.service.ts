@@ -50,14 +50,14 @@ const getSinglePatientFromDb = async(slug:string, query: Record<string, unknown>
     }
 }
 
-const getPatientProfile = async(user:TTokenUser) => {
+const getPatientProfileFromDb = async(user:TTokenUser) => {
     const userData = await UserModel.findOne({email:user.email})
     const patientData = await PatientModel.findOne({user:userData?._id}).populate("user");
     console.log(userData,patientData)
     return patientData
 }
 
-const updatePatientProfile = async(user:TTokenUser,payload:Partial<TPatient> & Partial<TUser>) => {
+const updatePatientProfileIntoDb = async(user:TTokenUser,payload:Partial<TPatient> & Partial<TUser>) => {
     const userData = await UserModel.findOne({user:user._id});
     if (!userData) {
         throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
@@ -74,9 +74,30 @@ const updatePatientProfile = async(user:TTokenUser,payload:Partial<TPatient> & P
         const result = await PatientModel.findOneAndUpdate({user:userData._id},payload,{new:true,runValidators:true});
     return result  
 }
+
+
+const deleteMyAccountFromDb = async(user:TTokenUser) => {
+    const userData = await UserModel.findOne({user:user._id});
+    if (!userData) {
+        throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
+      }
+      if (!userData.isActive) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
+      }
+      if (userData.isDelete) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Account is already Deleted");
+      }
+      if (!userData.validation?.isVerified) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
+      }
+        const result = await UserModel.findOneAndUpdate({user:userData._id},{isDelete:true},{new:true,runValidators:true});
+    return result  
+}
+
 export const PatientServices = {
     getAllPatientsFromDb,
     getSinglePatientFromDb,
-    getPatientProfile,
-    updatePatientProfile,
+    getPatientProfileFromDb,
+    updatePatientProfileIntoDb,
+    deleteMyAccountFromDb
 }

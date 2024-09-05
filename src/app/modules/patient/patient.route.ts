@@ -47,5 +47,7 @@ router.patch("/update-profile",
     PatientController.updatePatientProfile
 )
 
+router.delete("/delete-account", auth("patient"), PatientController.deleteMyAccount)
+
 
 export const PatientRoutes = router

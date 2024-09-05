@@ -26,7 +26,7 @@ const getSinglePatient = catchAsync(async (req, res) => {
 
 const getPatientProfile = catchAsync(async (req, res) => {
     const user = (req as CustomRequest).user
-    const result = await PatientServices.getPatientProfile(user);
+    const result = await PatientServices.getPatientProfileFromDb(user);
     sendResponse(req,res, {
         statusCode: httpStatus.OK,
         success: true,
@@ -38,7 +38,7 @@ const getPatientProfile = catchAsync(async (req, res) => {
 
 const updatePatientProfile = catchAsync(async (req, res) => {
     const user = (req as CustomRequest).user
-    const result = await PatientServices.updatePatientProfile(user,req.body);
+    const result = await PatientServices.updatePatientProfileIntoDb(user,req.body);
     sendResponse(req,res, {
         statusCode: httpStatus.OK,
         success: true,
@@ -48,11 +48,23 @@ const updatePatientProfile = catchAsync(async (req, res) => {
 })
 
 
+const deleteMyAccount = catchAsync(async (req, res) => {
+    const user = (req as CustomRequest).user
+    const result = await PatientServices.deleteMyAccountFromDb(user);
+    sendResponse(req,res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Profile deleted successfully',
+        data:result
+      });
+})
+
 
 export const PatientController = {
     getPatients,
     getSinglePatient,
     getPatientProfile,
     updatePatientProfile,
+    deleteMyAccount
 }
 
