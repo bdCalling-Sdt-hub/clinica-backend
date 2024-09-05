@@ -17,7 +17,7 @@ const createGlucose = catchAsync(async(req,res) => {
 
 const getGlucose = catchAsync(async(req,res) => {
     const user = (req as CustomRequest).user
-    const result = await GlucoseServices.getGlucoseFromDb(user);
+    const result = await GlucoseServices.getGlucoseFromDb(user,req.query);
     sendResponse(req,res,{
         statusCode: httpStatus.OK,
         success: true,

@@ -4,6 +4,7 @@ import { TTokenUser } from "../../types/common";
 import UserModel from "../user/user.model";
 import { TGlucose } from "./glucose.interface";
 import { GlucoseModel } from "./glucose.model";
+import QueryBuilder from "../../builder/QueryBuilder";
 
 const createGlucoseIntoDb = async (user:TTokenUser,payload: TGlucose) => {
 
@@ -31,7 +32,7 @@ const createGlucoseIntoDb = async (user:TTokenUser,payload: TGlucose) => {
     return newWeight;
 };
 
-const getGlucoseFromDb = async (user:TTokenUser) => {
+const getGlucoseFromDb = async (user:TTokenUser, query:Record<string,unknown>) => {
     const userData = await UserModel.findOne({ email: user.email }).lean();
     if (!userData) {
         throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
@@ -45,7 +46,9 @@ const getGlucoseFromDb = async (user:TTokenUser) => {
       if (!userData.validation?.isVerified) {
         throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
       }
-    const result = await GlucoseModel.find({user:userData._id});
+
+      const glucoseQuery = new QueryBuilder(GlucoseModel.find({user:userData._id}), query).filter();
+      const result = await glucoseQuery.modelQuery;
     return result;
 } 
 
