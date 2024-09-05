@@ -9,6 +9,7 @@ const admin: TUser = {
   gender: "male",
   isActive: true,
   isDelete: false,
+  contact: "1234567890",
   profilePicture:null,
   slug: "admin",
   validation: {
