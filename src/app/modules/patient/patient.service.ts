@@ -11,6 +11,7 @@ import { GlucoseModel } from "../glucose/glucose.model";
 import { WeightModel } from "../weight/weight.model";
 import { HealthRecordModel } from "../healthRecord/healthRecord.model";
 import mongoose from "mongoose";
+import { generateSlug } from "../../utils/generateSlug";
 
 const getAllPatientsFromDb = async(query: Record<string, unknown>) => {
     const patientQuery = new QueryBuilder(PatientModel.find().populate({path:"user"}),query).search(["dateOfBirth","bloodGroup"]).filter().sort().paginate().fields();
@@ -59,6 +60,30 @@ const getPatientProfileFromDb = async(user:TTokenUser) => {
 }
 
 const updatePatientProfileIntoDb = async(user:TTokenUser,payload:Partial<TPatient> & Partial<TUser>) => {
+
+  const userUpdatedData:Partial<TUser> = {} 
+
+  const {
+    name,
+    email,
+    profilePicture,
+    contact,
+    password,
+    role,
+    gender, ...patientUpdatedData } = payload;
+    if (name) {
+      const slug = generateSlug(name);
+      userUpdatedData.name = name
+      userUpdatedData.slug = slug
+      patientUpdatedData.slug = slug
+    };
+    if (email) userUpdatedData.email = email;
+    if (profilePicture) userUpdatedData.profilePicture = profilePicture;
+    if (contact) userUpdatedData.contact = contact;
+    if (password) userUpdatedData.password = password;
+    if (role) userUpdatedData.role = role;
+    if (gender) userUpdatedData.gender = gender;
+
     const userData = await UserModel.findOne({user:user._id});
     if (!userData) {
         throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
@@ -72,14 +97,29 @@ const updatePatientProfileIntoDb = async(user:TTokenUser,payload:Partial<TPatien
       if (!userData.validation?.isVerified) {
         throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
       }
-        const result = await PatientModel.findOneAndUpdate({user:userData._id},payload,{new:true,runValidators:true});
-    return result  
-}
+      const session = await mongoose.startSession();
+      try {
+        session.startTransaction();
+        await UserModel.findOneAndUpdate({user:user._id},userUpdatedData,{session});
+        await PatientModel.findOneAndUpdate({user:userData._id},patientUpdatedData,{session});
+        await session.commitTransaction();
+        session.endSession();
+        return {
+          ...patientUpdatedData,
+          user:userUpdatedData
+        }
+      } catch (error:any) {
+        await session.abortTransaction();
+        session.endSession();
+        throw new AppError(httpStatus.BAD_REQUEST, error.message);
+      }
+    }
 
 const patientActionForAdmin = async(slug:string,payload:{isDelete?:boolean,isActive?:boolean}) => {
+
   const updatedData:Record<string,unknown> = {}
-  if (payload.isActive !== undefined) updatedData.isActive = payload.isActive
-  if (payload.isDelete !== undefined) updatedData.isDelete = payload.isDelete
+  if (payload.isActive !== undefined) updatedData.isActive = payload.isActive;
+  if (payload.isDelete !== undefined) updatedData.isDelete = payload.isDelete;
 
     const userData = await UserModel.findOne({slug:slug});
     if (!userData) {
@@ -100,7 +140,6 @@ const patientActionForAdmin = async(slug:string,payload:{isDelete?:boolean,isAct
       }
 }
 
-
 const deleteMyAccountFromDb = async(user:TTokenUser) => {
     const userData = await UserModel.findOne({user:user._id});
     if (!userData) {
@@ -116,7 +155,6 @@ const deleteMyAccountFromDb = async(user:TTokenUser) => {
         throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
       }
       const result = await UserModel.findOneAndUpdate({_id:userData._id,role:user.role},{isDelete:true},{new:true,runValidators:true});
-      console.log(result,"result")
     return result  
 }
 

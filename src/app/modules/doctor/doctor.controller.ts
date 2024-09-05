@@ -2,6 +2,7 @@ import httpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { DoctorServices } from "./doctor.service";
+import { CustomRequest } from "../../types/common";
 
 const createDoctor = catchAsync(async (req, res) => {
     const doctor = await DoctorServices.createDoctorFromDb(req.body);
@@ -15,7 +16,7 @@ const createDoctor = catchAsync(async (req, res) => {
 
 
 const getDoctors = catchAsync(async (req, res) => {
-    const doctors = await DoctorServices.getDoctors();
+    const doctors = await DoctorServices.getDoctorsFromDb();
     sendResponse(req,res, {
         statusCode: httpStatus.OK,
         success: true,
@@ -56,8 +57,9 @@ const updateDoctor = catchAsync(async (req, res) => {
 })
 
 
-const deleteDoctor = catchAsync(async (req, res) => {
-    const doctor = await DoctorServices.deleteDoctorFromDb(req.params.doctorId);
+const deleteMyAccount = catchAsync(async (req, res) => {
+    const user = (req as CustomRequest).user
+    const doctor = await DoctorServices.deleteMyProfileFromDb(user);
     sendResponse(req,res, {
         statusCode: httpStatus.OK,
         success: true,
@@ -73,5 +75,5 @@ export const DoctorControllers = {
     getSingleDoctor,
     getProfile,
     updateDoctor,
-    deleteDoctor
+    deleteMyAccount
 }

@@ -12,8 +12,10 @@ import path from "path"
 import fs from "fs"
 import { sendMail } from "../../utils/sendMail";
 import { createToken } from "../auth/auth.utils";
+import { TUser } from "../user/user.interface";
+import { TTokenUser } from "../../types/common";
 
-const createDoctorFromDb = async (payload: TDoctor) => {
+const createDoctorFromDb = async (payload: TDoctor & TUser) => {
     const hashedPassword = await bcrypt.hash(payload.password, Number(config.bcrypt_salt_rounds));
     payload.password = hashedPassword;
     const slug = generateSlug(payload.name)
@@ -40,7 +42,7 @@ const createDoctorFromDb = async (payload: TDoctor) => {
       }
   
          // Create doctor document
-         await DoctorModel.create([{ ...payload, role: "doctor",user:userData._id,slug:userData.slug }], { session });
+         await DoctorModel.create([{ ...payload, user:userData._id,slug:userData.slug }], { session });
   
       //  SEND EMAIL FOR VERIFICATION
       const otp = Math.floor(100000 + Math.random() * 900000);   
@@ -79,7 +81,7 @@ const createDoctorFromDb = async (payload: TDoctor) => {
     }
 };
 
-const getDoctors = async () => {
+const getDoctorsFromDb = async () => {
     const doctors = await DoctorModel.find().populate("user");
     return doctors;
 };
@@ -95,25 +97,25 @@ const getProfileFromDb = async () => {
     return profile;
 };
 
-const updateDoctorIntoDb = async (doctorId: string, doctor: TDoctor) => {
-    const updatedDoctor = await DoctorModel.findByIdAndUpdate(doctorId, doctor, {
+const updateDoctorIntoDb = async (slug: string, payload: Partial<TDoctor>) => {
+    const updatedDoctor = await DoctorModel.findOneAndUpdate({slug}, payload, {
         new: true,
     });
     return updatedDoctor;
 };
 
-const deleteDoctorFromDb = async (doctorId: string) => {
-    const deletedDoctor = await DoctorModel.findByIdAndDelete(doctorId);
-    return deletedDoctor;
+const deleteMyProfileFromDb = async (user: TTokenUser) => {
+    // const deletedDoctor = await DoctorModel.findByIdAndDelete(doctorId);
+    // return deletedDoctor;
 };
 
 
 
 export const DoctorServices = {
     createDoctorFromDb,
-    getDoctors,
+    getDoctorsFromDb,
     getSingleDoctorFromDb,
     getProfileFromDb,
     updateDoctorIntoDb,
-    deleteDoctorFromDb,
+    deleteMyProfileFromDb,
 }

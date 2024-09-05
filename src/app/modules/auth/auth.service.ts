@@ -42,7 +42,7 @@ const createPatientIntoDb = async (payload: TUser) => {
     }
 
        // Create Patient document
-       await PatientModel.create([{ ...payload, role: "patient",user:userData._id,slug:userData.slug }], { session });
+       await PatientModel.create([{ ...payload,user:userData._id,slug:userData.slug }], { session });
 
     //  SEND EMAIL FOR VERIFICATION
     const otp = Math.floor(100000 + Math.random() * 900000);   
