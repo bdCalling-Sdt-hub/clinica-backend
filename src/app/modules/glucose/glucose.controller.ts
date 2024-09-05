@@ -26,7 +26,20 @@ const getGlucose = catchAsync(async(req,res) => {
     });
 })
 
+
+const getLatestGlucoseData = catchAsync(async(req,res) => {
+    const user = (req as CustomRequest).user
+    const result = await GlucoseServices.getLatestGlucoseDataFromDb(user);
+    sendResponse(req,res,{
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Glucose fetched successfully",
+        data: result
+    });
+})
+
 export const GlucoseControllers = {
     createGlucose,
-    getGlucose
+    getGlucose,
+    getLatestGlucoseData
 }

@@ -7,7 +7,6 @@ import { BloodPressureModel } from "./bloodPressure.model";
 import QueryBuilder from "../../builder/QueryBuilder";
 
 const createBloodPressureIntoDb = async (user:TTokenUser,payload: TBloodPressure) => {
-
     const userData = await UserModel.findOne({ email: user.email }).lean();
     if (!userData) {
         throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
@@ -21,6 +20,7 @@ const createBloodPressureIntoDb = async (user:TTokenUser,payload: TBloodPressure
       if (!userData.validation?.isVerified) {
         throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
       }
+
     const bloodPressureData = {
         user: userData._id,
         date: payload.date,
