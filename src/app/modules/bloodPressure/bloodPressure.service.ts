@@ -50,7 +50,7 @@ const getBloodPressuresFromDb = async (user:TTokenUser,query:Record<string,unkno
 
       const bloodPressureQuery = new QueryBuilder(BloodPressureModel.find({user:userData._id}),query).filter();
 
-    const result = await bloodPressureQuery.modelQuery;
+    const result = await bloodPressureQuery.modelQuery.lean();
     return result;
 } 
 

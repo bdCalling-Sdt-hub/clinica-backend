@@ -48,7 +48,7 @@ const getGlucoseFromDb = async (user:TTokenUser, query:Record<string,unknown>) =
       }
 
       const glucoseQuery = new QueryBuilder(GlucoseModel.find({user:userData._id}), query).filter();
-      const result = await glucoseQuery.modelQuery;
+      const result = await glucoseQuery.modelQuery.lean();
     return result;
 } 
 

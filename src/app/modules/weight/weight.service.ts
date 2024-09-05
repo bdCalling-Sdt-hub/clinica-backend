@@ -4,6 +4,7 @@ import { TTokenUser } from "../../types/common";
 import UserModel from "../user/user.model";
 import { TWeight } from "./weight.interface";
 import { WeightModel } from "./weight.model";
+import QueryBuilder from "../../builder/QueryBuilder";
 
 const createWeightIntoDb = async (user:TTokenUser,payload: TWeight) => {
 
@@ -30,7 +31,7 @@ const createWeightIntoDb = async (user:TTokenUser,payload: TWeight) => {
     return newWeight;
 };
 
-const getWeightsFromDb = async (user:TTokenUser) => {
+const getWeightsFromDb = async (user:TTokenUser,query:Record<string,unknown>) => {
     const userData = await UserModel.findOne({ email: user.email }).lean();
     if (!userData) {
         throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
@@ -44,8 +45,10 @@ const getWeightsFromDb = async (user:TTokenUser) => {
       if (!userData.validation?.isVerified) {
         throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
       }
-    const weights = await WeightModel.find({user:userData._id});
-    return weights;
+
+      const weightQuery = new QueryBuilder(WeightModel.find({user:userData._id}),query).filter()
+    const result = await weightQuery.modelQuery.lean();
+    return result;
 } 
 
 export const WeightServices = {

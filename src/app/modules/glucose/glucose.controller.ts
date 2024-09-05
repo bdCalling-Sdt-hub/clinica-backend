@@ -23,7 +23,7 @@ const getGlucose = catchAsync(async(req,res) => {
         success: true,
         message: "Glucose fetched successfully",
         data: result
-    })
+    });
 })
 
 export const GlucoseControllers = {
