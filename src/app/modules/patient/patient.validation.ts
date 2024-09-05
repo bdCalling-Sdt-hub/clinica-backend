@@ -36,7 +36,16 @@ const updatePatient = z.object({
   }).partial().strict()
 
 
+  const patientActionValidation = z.object({
+    body: z.object({
+      isDelete: z.boolean().optional(),
+      isActive: z.boolean().optional(),
+    })
+  })
+
+
 export const PatientValidation = {
   createPatient,
-  updatePatient
+  updatePatient,
+  patientActionValidation
 };

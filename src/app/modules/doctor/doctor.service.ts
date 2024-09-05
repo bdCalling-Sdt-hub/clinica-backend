@@ -62,7 +62,7 @@ const createDoctorFromDb = async (payload: TDoctor) => {
       const token = createToken(
         jwtPayload,
         config.jwt_reset_secret as string,
-        "3m"
+        config.jwt_reset_token_expire_in as string
       );
   
       // Commit the transaction
@@ -85,13 +85,13 @@ const getDoctors = async () => {
 };
 
 
-const getSingleDoctorFromDb = async (doctorId: string) => {
-    const doctor = await DoctorModel.findById(doctorId);
+const getSingleDoctorFromDb = async (slug: string) => {
+    const doctor = await DoctorModel.findOne({slug}).populate("user");
     return doctor;
 };
 
 const getProfileFromDb = async () => {
-    const profile = await DoctorModel.find();
+    const profile = await DoctorModel.find().populate("user");
     return profile;
 };
 

@@ -10,9 +10,10 @@ import { BloodPressureModel } from "../bloodPressure/bloodPressure.model";
 import { GlucoseModel } from "../glucose/glucose.model";
 import { WeightModel } from "../weight/weight.model";
 import { HealthRecordModel } from "../healthRecord/healthRecord.model";
+import mongoose from "mongoose";
 
 const getAllPatientsFromDb = async(query: Record<string, unknown>) => {
-    const patientQuery = new QueryBuilder(PatientModel.find({isDelete:false,isActive:true}).populate("user"),query).search(["dateOfBirth","bloodGroup"]).filter().sort().paginate().fields();
+    const patientQuery = new QueryBuilder(PatientModel.find().populate({path:"user"}),query).search(["dateOfBirth","bloodGroup"]).filter().sort().paginate().fields();
     const meta = await patientQuery.countTotal();
     const patients = await patientQuery.modelQuery;
     return { meta, patients };
@@ -75,6 +76,30 @@ const updatePatientProfileIntoDb = async(user:TTokenUser,payload:Partial<TPatien
     return result  
 }
 
+const patientActionForAdmin = async(slug:string,payload:{isDelete?:boolean,isActive?:boolean}) => {
+  const updatedData:Record<string,unknown> = {}
+  if (payload.isActive !== undefined) updatedData.isActive = payload.isActive
+  if (payload.isDelete !== undefined) updatedData.isDelete = payload.isDelete
+
+    const userData = await UserModel.findOne({slug:slug});
+    if (!userData) {
+        throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
+      }
+      const session = await mongoose.startSession();
+      try {
+        session.startTransaction();
+        await UserModel.findOneAndUpdate({slug:slug},updatedData,{session});
+        await PatientModel.findOneAndUpdate({user:userData._id},updatedData,{session});
+        await session.commitTransaction();
+        session.endSession();
+        return null
+      } catch (error:any) {
+        await session.abortTransaction();
+        session.endSession();
+        throw new AppError(httpStatus.BAD_REQUEST, error.message);
+      }
+}
+
 
 const deleteMyAccountFromDb = async(user:TTokenUser) => {
     const userData = await UserModel.findOne({user:user._id});
@@ -100,5 +125,6 @@ export const PatientServices = {
     getSinglePatientFromDb,
     getPatientProfileFromDb,
     updatePatientProfileIntoDb,
-    deleteMyAccountFromDb
+    deleteMyAccountFromDb,
+    patientActionForAdmin
 }

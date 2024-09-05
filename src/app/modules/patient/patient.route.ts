@@ -4,6 +4,7 @@ import { uploadToS3 } from "../../constrant/s3";
 import auth from "../../middlewares/auth";
 import { PatientController } from "./patient.controller";
 import { PatientValidation } from "./patient.validation";
+import validateRequest from "../../middlewares/validateRequest";
 const storage = memoryStorage();
 const upload = multer({ storage });
 
@@ -47,7 +48,9 @@ router.patch("/update-profile",
     PatientController.updatePatientProfile
 )
 
-router.delete("/delete-account", auth("patient"), PatientController.deleteMyAccount)
+router.patch("/action/:slug", auth("admin"),  validateRequest(PatientValidation.patientActionValidation), PatientController.patientActionForAdmin);
+router.delete("/delete-account", auth("patient"), PatientController.deleteMyAccount);
+
 
 
 export const PatientRoutes = router

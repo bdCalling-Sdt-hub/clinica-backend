@@ -59,12 +59,23 @@ const deleteMyAccount = catchAsync(async (req, res) => {
       });
 })
 
+const patientActionForAdmin = catchAsync(async (req, res) => {
+    const result = await PatientServices.patientActionForAdmin(req.params.slug,req.body);
+    sendResponse(req,res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Patient action successfully',
+        data:result
+      });
+})
+
 
 export const PatientController = {
     getPatients,
     getSinglePatient,
     getPatientProfile,
     updatePatientProfile,
-    deleteMyAccount
+    deleteMyAccount,
+    patientActionForAdmin
 }
 

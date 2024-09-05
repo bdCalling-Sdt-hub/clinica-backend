@@ -1,4 +1,3 @@
-import { TGender } from "../patient/patient.interface";
 
 export type TUser = {
     name: string;
@@ -19,3 +18,4 @@ export type TValidation = {
     expiry: string | null;
     isVerified: boolean;
 }
+export type TGender = "male" | "female"

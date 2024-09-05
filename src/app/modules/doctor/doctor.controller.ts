@@ -26,7 +26,7 @@ const getDoctors = catchAsync(async (req, res) => {
 
 
 const getSingleDoctor = catchAsync(async (req, res) => {
-    const doctor = await DoctorServices.getSingleDoctorFromDb(req.params.doctorId);
+    const doctor = await DoctorServices.getSingleDoctorFromDb(req.params.slug);
     sendResponse(req,res, {
         statusCode: httpStatus.OK,
         success: true,

@@ -19,14 +19,9 @@ export type TPatient = {
     babyBelow2500Grams?:boolean;
     higherRiskOfPreeclampsia?:boolean
     gestationalAge?:number
-    bloodPressure?: Schema.Types.ObjectId;
-    glucose?: Schema.Types.ObjectId;
-    weight?:  Schema.Types.ObjectId;
     isActive: boolean;
     isDelete:boolean;
-    createdAt: string;
-    updatedAt: string;
 }
 
-export type TGender = "male" | "female"
+
 export type TBloodGroup = "O+" | "O-" | "A+" | "A- " | "B+" | "B-" | "AB+" | "AB-"
