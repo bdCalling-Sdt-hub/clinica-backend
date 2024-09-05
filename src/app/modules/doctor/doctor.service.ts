@@ -16,6 +16,7 @@ import { TUser } from "../user/user.interface";
 import { TTokenUser } from "../../types/common";
 
 const createDoctorFromDb = async (payload: TDoctor & TUser) => {
+  console.log({payload})
     const hashedPassword = await bcrypt.hash(payload.password, Number(config.bcrypt_salt_rounds));
     payload.password = hashedPassword;
     const slug = generateSlug(payload.name)
@@ -26,10 +27,8 @@ const createDoctorFromDb = async (payload: TDoctor & TUser) => {
       payload.role = "doctor";
       // Create User document
      const user = await UserModel.create([payload], { session });
-  
       // Retrieve the created User document
       const userData = await UserModel.findOne({ email: payload.email}).session(session);
-  
       if (!userData) {
         throw new AppError(httpStatus.NOT_FOUND, "Invalid Email");
       }
@@ -40,10 +39,8 @@ const createDoctorFromDb = async (payload: TDoctor & TUser) => {
       if (userData.isDelete) {
         throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
       }
-  
          // Create doctor document
          await DoctorModel.create([{ ...payload, user:userData._id,slug:userData.slug }], { session });
-  
       //  SEND EMAIL FOR VERIFICATION
       const otp = Math.floor(100000 + Math.random() * 900000);   
       const currentTime = new Date();
@@ -98,8 +95,25 @@ const getProfileFromDb = async () => {
 };
 
 const updateDoctorIntoDb = async (slug: string, payload: Partial<TDoctor>) => {
-    const updatedDoctor = await DoctorModel.findOneAndUpdate({slug}, payload, {
+  const updatedData:Record<string,unknown> = {}
+  if (payload.isActive !== undefined) updatedData.isActive = payload.isActive;
+  if (payload.isDelete !== undefined) updatedData.isDelete = payload.isDelete;
+    const updatedDoctor = await DoctorModel.findOneAndUpdate({slug}, updatedData, {
         new: true,
+    });
+    return updatedDoctor;
+};
+
+const doctorActionFromAdmin = async (slug: string, payload: { isDelete?: boolean, isActive?: boolean }) => {
+
+  const userData = await DoctorModel.findOne({ slug });
+
+  if (!userData) {
+    throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
+  }
+    const updatedDoctor = await DoctorModel.findOneAndUpdate({ slug }, payload, {
+        new: true,
+        runValidators:true
     });
     return updatedDoctor;
 };
@@ -110,7 +124,6 @@ const deleteMyProfileFromDb = async (user: TTokenUser) => {
 };
 
 
-
 export const DoctorServices = {
     createDoctorFromDb,
     getDoctorsFromDb,
@@ -118,4 +131,5 @@ export const DoctorServices = {
     getProfileFromDb,
     updateDoctorIntoDb,
     deleteMyProfileFromDb,
+    doctorActionFromAdmin
 }

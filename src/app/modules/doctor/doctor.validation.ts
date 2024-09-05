@@ -25,10 +25,18 @@ const updateDoctorValidation = z.object({
         title: z.string({required_error:"Title is required"}),
         gender: z.enum(["male", "female"],{required_error:"Gender is required"}),
         about: z.string().optional(),
-    }).partial()
+    }).partial().strict()
+})
+
+const doctorActionFromAdminValidation = z.object({
+    body:z.object({
+        isDelete: z.boolean().optional(),
+        isActive: z.boolean().optional(),
+    }).strict()
 })
 
 export const DoctorValidations = {
     createDoctorValidation,
-    updateDoctorValidation
+    updateDoctorValidation,
+    doctorActionFromAdminValidation
 }

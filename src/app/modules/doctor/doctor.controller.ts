@@ -56,6 +56,15 @@ const updateDoctor = catchAsync(async (req, res) => {
     });
 })
 
+const doctorActionFromAdmin = catchAsync(async (req, res) => {
+    const doctor = await DoctorServices.doctorActionFromAdmin(req.params.slug, req.body);
+    sendResponse(req,res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Doctor updated successfully",
+        data: doctor,
+    });
+})
 
 const deleteMyAccount = catchAsync(async (req, res) => {
     const user = (req as CustomRequest).user
@@ -75,5 +84,6 @@ export const DoctorControllers = {
     getSingleDoctor,
     getProfile,
     updateDoctor,
-    deleteMyAccount
+    deleteMyAccount,
+    doctorActionFromAdmin
 }

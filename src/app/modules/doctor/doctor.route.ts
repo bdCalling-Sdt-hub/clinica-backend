@@ -8,10 +8,10 @@ const router = Router();
 
 router.get("/doctor-list", auth("admin","patient","doctor"), DoctorControllers.getDoctors);
 router.get("/profile", auth("doctor"), DoctorControllers.getProfile);
-router.get("/:slug", auth("admin","patient","doctor"), DoctorControllers.getSingleDoctor);
 router.post("/create", auth("admin"),validateRequest(DoctorValidations.createDoctorValidation), DoctorControllers.createDoctor);
-router.patch("/update-profile/:slug", auth("doctor"), validateRequest(DoctorValidations.updateDoctorValidation), DoctorControllers.updateDoctor);
+router.get("/:slug", auth("admin","patient","doctor"), DoctorControllers.getSingleDoctor);
+router.patch("/update-profile", auth("doctor"), validateRequest(DoctorValidations.updateDoctorValidation), DoctorControllers.updateDoctor);
 router.delete("/delete-my-account", auth("doctor"), DoctorControllers.deleteMyAccount);
-
+router.patch("/action/:slug", auth("admin"), validateRequest(DoctorValidations.doctorActionFromAdminValidation), DoctorControllers.doctorActionFromAdmin);
 
 export const DoctorRoute = router
