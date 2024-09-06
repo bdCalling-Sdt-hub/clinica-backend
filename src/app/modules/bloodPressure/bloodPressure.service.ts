@@ -12,7 +12,7 @@ const createBloodPressureIntoDb = async (user:TTokenUser,payload: TBloodPressure
         throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
       }
       if (!userData.isActive) {
-        throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
+        throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
       }
       if (userData.isDelete) {
         throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
@@ -39,7 +39,7 @@ const getBloodPressuresFromDb = async (user:TTokenUser,query:Record<string,unkno
         throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
       }
       if (!userData.isActive) {
-        throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
+        throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
       }
       if (userData.isDelete) {
         throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");

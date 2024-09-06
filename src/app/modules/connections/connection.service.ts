@@ -16,7 +16,7 @@ const createConnectionIntoDb = async (user:TTokenUser, payload: {doctorId:string
         throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
     } 
     if (!userData.isActive) {
-        throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
+        throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
     }
 
     const doctorData = await UserModel.findOne({ _id: payload.doctorId,role:"doctor" }).lean();
@@ -27,7 +27,7 @@ const createConnectionIntoDb = async (user:TTokenUser, payload: {doctorId:string
         throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
     }
     if (!doctorData.isActive) {
-        throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
+        throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
     }
 
     const result = await ConnectionModel.create({
@@ -47,7 +47,7 @@ const getConnectionRequestFromDb = async (user:TTokenUser,query:Record<string,un
         throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
     } 
     if (!userData.isActive) {
-        throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
+        throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
     }
     const connectionQuery = new QueryBuilder(ConnectionModel.find({
         doctor: userData._id
@@ -66,7 +66,7 @@ const getMyConnectionRequest = async (user:TTokenUser, query:Record<string,unkno
         throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
     } 
     if (!userData.isActive) {
-        throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
+        throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
     }
    const connectionQuery = new QueryBuilder(ConnectionModel.find({
         patient: userData._id
@@ -86,7 +86,7 @@ const updateConnectionStatusIntoDb = async (user:TTokenUser, connectionId:string
     }
 
     if (!userData.isActive) {
-        throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
+        throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
     }
 
     const result = await ConnectionModel.findOneAndUpdate({
@@ -112,7 +112,7 @@ const cancelConnectionIntoDb = async (user:TTokenUser, payload: {connectionId:st
         throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
     } 
     if (!userData.isActive) {
-        throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
+        throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
     }
 
     const result = await ConnectionModel.findOneAndDelete({

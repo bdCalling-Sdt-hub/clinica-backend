@@ -9,10 +9,10 @@ const validationSchema = new Schema<TValidation>({
 })
 
 const UserSchema = new Schema<TUser>({
-    name: { type: String, required: true, unique:true },
-    slug: { type: String, required: true, unique:true },
-    email: { type: String, required: true, unique: true },
-    contact: { type: String, required: true, unique: true },
+    name: { type: String, required: true, },
+    slug: { type: String, required: true, },
+    email: { type: String, required: true, },
+    contact: { type: String, required: true, },
     gender: { type: String, enum: ["male", "female"] },
     profilePicture: { type: String, default: null },
     password: { type: String, required: true,select:0 },
@@ -24,7 +24,10 @@ const UserSchema = new Schema<TUser>({
     timestamps: true
 });
 
-
+UserSchema.index({ email: 1 }, { unique: true, partialFilterExpression: { isDelete: false } });
+UserSchema.index({ contact: 1 }, { unique: true, partialFilterExpression: { isDelete: false } });
+UserSchema.index({ slug: 1 }, { unique: true, partialFilterExpression: { isDelete: false } });
+UserSchema.index({ name: 1 }, { unique: true, partialFilterExpression: { isDelete: false } });
 
 const UserModel = model<TUser>('User', UserSchema);
 export default UserModel

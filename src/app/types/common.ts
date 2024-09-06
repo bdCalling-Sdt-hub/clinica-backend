@@ -1,7 +1,7 @@
 import { Request } from "express";
 import { JwtPayload } from "jsonwebtoken";
 
-export type TTokenUser = JwtPayload & { email: string; role: TUserRole };
+export type TTokenUser = { email: string; role: TUserRole };
 export interface CustomRequest extends Request {
   user: TTokenUser;
 }

@@ -34,7 +34,7 @@ const createDoctorFromDb = async (payload: TDoctor & TUser) => {
       }
   
       if (!userData.isActive) {
-        throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
+        throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
       }
       if (userData.isDelete) {
         throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
@@ -129,12 +129,12 @@ const updateDoctorIntoDb = async (user: TTokenUser, payload: Partial<TDoctor> & 
     if (role) userUpdatedData.role = role;
     if (gender) userUpdatedData.gender = gender;
 
-    const userData = await UserModel.findOne({user:user._id});
+    const userData = await UserModel.findOne({email:user.email});
     if (!userData) {
         throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
       }
       if (!userData.isActive) {
-        throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
+        throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
       }
       if (userData.isDelete) {
         throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
@@ -145,7 +145,7 @@ const updateDoctorIntoDb = async (user: TTokenUser, payload: Partial<TDoctor> & 
       const session = await mongoose.startSession();
       try {
         session.startTransaction();
-        await UserModel.findOneAndUpdate({user:user._id},userUpdatedData,{session});
+        await UserModel.findOneAndUpdate({email:user.email},userUpdatedData,{session});
         await DoctorModel.findOneAndUpdate({user:userData._id},patientUpdatedData,{session});
         await session.commitTransaction();
         session.endSession();
@@ -175,8 +175,33 @@ const doctorActionFromAdmin = async (slug: string, payload: { isDelete?: boolean
 };
 
 const deleteMyProfileFromDb = async (user: TTokenUser) => {
-    // const deletedDoctor = await DoctorModel.findByIdAndDelete(doctorId);
-    // return deletedDoctor;
+  const userData = await UserModel.findOne({email:user.email});
+  if (!userData) {
+      throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
+    }
+    if (!userData.isActive) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
+    }
+    if (userData.isDelete) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Account is already Deleted");
+    }
+    if (!userData.validation?.isVerified) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
+    }
+
+    const session = await mongoose.startSession();
+    try {
+      session.startTransaction();
+      await UserModel.findOneAndUpdate({email:user.email},{isDelete:true},{session});
+      await DoctorModel.findOneAndUpdate({user:userData._id},{isDelete:true},{session});
+      await session.commitTransaction();
+      session.endSession();
+      return null
+    } catch (error:any) {
+      await session.abortTransaction();
+      session.endSession();
+      throw new AppError(httpStatus.BAD_REQUEST, error.message);
+    }
 };
 
 

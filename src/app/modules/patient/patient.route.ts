@@ -49,7 +49,7 @@ router.patch("/update-profile",
 )
 
 router.patch("/action/:slug", auth("admin"),  validateRequest(PatientValidation.patientActionValidation), PatientController.patientActionForAdmin);
-router.delete("/delete-account", auth("patient"), PatientController.deleteMyAccount);
+router.delete("/delete-my-account", auth("patient"), PatientController.deleteMyAccount);
 
 
 

@@ -23,7 +23,8 @@ const createPatientIntoDb = async (payload: TUser) => {
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
-    payload.role = "patient";
+    payload.role = "patient"; 
+
     // Create User document
    const user = await UserModel.create([payload], { session });
 
@@ -35,10 +36,7 @@ const createPatientIntoDb = async (payload: TUser) => {
     }
 
     if (!userData.isActive) {
-      throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
-    }
-    if (userData.isDelete) {
-      throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
+      throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
     }
 
        // Create Patient document
@@ -102,7 +100,7 @@ const verifyAccount = async (token:string,payload:{email:string,otp:number}) => 
   }
 
   if (!userData.isActive) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
   }
   if (userData.isDelete) {
     throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
@@ -151,7 +149,7 @@ const resendOtp = async (payload:{email:string}) => {
     }
 
     if (!userData.isActive) {
-      throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
+      throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
     }
     if (userData.isDelete) {
       throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
@@ -195,7 +193,7 @@ const signInIntoDb = async (payload:{email:string,password:string}) => {
   }
 
   if (!userData.isActive) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
   }
   if (userData.isDelete) {
     throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
@@ -240,7 +238,7 @@ const refreshToken = async (refreshToken:string) => {
     throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
   }
   if (!userData.isActive) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
   }
   if (userData.isDelete) {
     throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
@@ -266,7 +264,7 @@ const changePassword = async (user:TTokenUser,payload:{email:string,oldPassword:
     throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
   }
   if (!userData.isActive) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
   }
   if (userData.isDelete) {
     throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
@@ -292,7 +290,7 @@ const forgetPasswordIntoDb = async (email:string) => {
       throw new AppError(httpStatus.NOT_FOUND, "Invalid Email");
     }
     if (!userData.isActive) {
-      throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
+      throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
     }
     if (userData.isDelete) {
       throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
@@ -334,7 +332,7 @@ const resetPassword = async (token:string, payload:{email:string,otp:string,pass
     throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
   } 
   if (!userData.isActive) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
   }
 
   if (payload.otp !== userData.validation?.otp.toString()) {

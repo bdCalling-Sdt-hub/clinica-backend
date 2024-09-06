@@ -13,7 +13,7 @@ const createWeightIntoDb = async (user:TTokenUser,payload: TWeight) => {
         throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
       }
       if (!userData.isActive) {
-        throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
+        throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
       }
       if (userData.isDelete) {
         throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
@@ -37,7 +37,7 @@ const getWeightsFromDb = async (user:TTokenUser,query:Record<string,unknown>) =>
         throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
       }
       if (!userData.isActive) {
-        throw new AppError(httpStatus.BAD_REQUEST, "Account is Deactivated");
+        throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
       }
       if (userData.isDelete) {
         throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");

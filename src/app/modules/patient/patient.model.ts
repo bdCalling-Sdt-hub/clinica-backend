@@ -3,8 +3,8 @@ import { TPatient } from "./patient.interface";
 
 // Patient Schema
 const PatientSchema = new Schema<TPatient>({
-    user: { type: Schema.Types.ObjectId, ref: "User", required: true,unique:true },
-    slug: { type: String, required: true, unique: true },
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true, },
+    slug: { type: String, required: true, },
     dateOfBirth: { type: String, default: null },
     bloodGroup: { type: String, enum: ["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"], default: null },
     height: { type: String, default: null },
@@ -26,6 +26,9 @@ const PatientSchema = new Schema<TPatient>({
 }, {
     timestamps: true, 
 });
+
+PatientSchema.index({ user: 1 }, { unique: true, partialFilterExpression: { isDelete: false } });
+PatientSchema.index({ slug: 1 }, { unique: true, partialFilterExpression: { isDelete: false } });
 
 const PatientModel = model<TPatient>('Patient', PatientSchema);
 
