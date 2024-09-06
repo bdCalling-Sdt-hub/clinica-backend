@@ -14,7 +14,7 @@ const PatientSchema = new Schema<TPatient>({
     vitroFertilization: { type: Boolean, default: false },
     chronicHypertension: { type: Boolean, default: false },
     lupus: { type: Boolean, default: false },
-    gestationalAge: { type: String, default: null },
+    gestationalAge: { type: Number, default: null },
     antiphospholipidSyndrome: { type: Boolean, default: false },
     motherPreeclampsiaHistory: { type: Boolean, default: false },
     firstPregnancy: { type: Boolean, default: false },

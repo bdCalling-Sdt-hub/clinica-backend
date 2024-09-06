@@ -97,7 +97,6 @@ const getLatestGlucoseDataFromDb = async (user:TTokenUser) => {
       $limit: 1
     }
   ]).exec();
-
   return latestData[0];
 };
 

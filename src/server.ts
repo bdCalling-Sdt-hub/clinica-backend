@@ -30,7 +30,8 @@ process.on("unhandledRejection", () => {
   process.exit(1);
 });
 
-process.on("uncaughtException", () => {
+process.on("uncaughtException", (error) => {
+  console.log(error)
   console.log("uncaughtException detected server shutting down 😈");
   process.exit(1);
 });

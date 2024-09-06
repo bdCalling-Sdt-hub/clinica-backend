@@ -1,2 +1,2 @@
-const NotificationControllers = {
+export const NotificationControllers = {
 }

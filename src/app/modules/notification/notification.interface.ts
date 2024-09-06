@@ -1,5 +1,5 @@
 export type TNotification ={
-    type:string;
+    type:"connection" | "glucose" | "bloodPressure" | "weight" | "message";
     title?:string;
     message:string;
     isRead:boolean;

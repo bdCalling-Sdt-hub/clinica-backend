@@ -14,7 +14,8 @@ import mongoose from "mongoose";
 import { generateSlug } from "../../utils/generateSlug";
 
 const getAllPatientsFromDb = async(query: Record<string, unknown>) => {
-    const patientQuery = new QueryBuilder(PatientModel.find().populate({path:"user"}),query).search(["dateOfBirth","bloodGroup"]).filter().sort().paginate().fields();
+  console.log(query)
+    const patientQuery = new QueryBuilder(PatientModel.find().populate({path:"user",}),query).search(["dateOfBirth","bloodGroup"]).filter().sort().paginate().fields();
     const meta = await patientQuery.countTotal();
     const patients = await patientQuery.modelQuery;
     return { meta, patients };
@@ -62,7 +63,6 @@ const getPatientProfileFromDb = async(user:TTokenUser) => {
 const updatePatientProfileIntoDb = async(user:TTokenUser,payload:Partial<TPatient> & Partial<TUser>) => {
 
   const userUpdatedData:Partial<TUser> = {} 
-
   const {
     name,
     email,

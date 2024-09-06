@@ -1,5 +1,3 @@
-import { z } from "zod"
 
-
-const NotificationValidations = {
+export const NotificationValidations = {
 }

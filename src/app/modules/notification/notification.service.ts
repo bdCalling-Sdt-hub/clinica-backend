@@ -1,1 +1,1 @@
-const NotificationServices = {}
+export const NotificationServices = {}
