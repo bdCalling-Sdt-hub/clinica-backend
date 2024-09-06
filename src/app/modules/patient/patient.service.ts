@@ -14,8 +14,13 @@ import mongoose from "mongoose";
 import { generateSlug } from "../../utils/generateSlug";
 
 const getAllPatientsFromDb = async(query: Record<string, unknown>) => {
-  console.log(query)
-    const patientQuery = new QueryBuilder(PatientModel.find().populate({path:"user",}),query).search(["dateOfBirth","bloodGroup"]).filter().sort().paginate().fields();
+  const userFields = (query?.userFields as string).split(",").join(" ");
+
+  if (query?.userFields) {
+    delete query.userFields
+  }
+
+    const patientQuery = new QueryBuilder(PatientModel.find().populate({path:"user",select:userFields}),query).search(["dateOfBirth","bloodGroup",]).filter().sort().paginate().fields();
     const meta = await patientQuery.countTotal();
     const patients = await patientQuery.modelQuery;
     return { meta, patients };
