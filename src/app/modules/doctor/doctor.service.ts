@@ -79,7 +79,14 @@ const createDoctorFromDb = async (payload: TDoctor & TUser) => {
 };
 
 const getDoctorsFromDb = async (query:Record<string,unknown>) => {
-  const doctorQuery = new QueryBuilder(DoctorModel.find().populate("user"),query).search(["slug" , "title", "experience", "address", "about"]).filter().sort().paginate().fields();
+
+  const userFields = (query?.userFields as string).split(",").join(" ");
+
+  if (query?.userFields) {
+    delete query.userFields
+  }
+
+  const doctorQuery = new QueryBuilder(DoctorModel.find().populate({path:"user",select:userFields}),query).search(["slug" , "title", "experience", "address", "about"]).filter().sort().paginate().fields();
     const result = await doctorQuery.modelQuery;
     const meta = await doctorQuery.countTotal();
 
