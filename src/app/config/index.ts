@@ -16,6 +16,7 @@ export default {
   jwt_reset_token_expire_in: process.env.JWT_RESET_TOKEN_EXPIRED_IN,
   access_token_expire_in: process.env.JWT_ACCESS_TOKEN_EXPIRED_IN,
   refresh_token_expire_in: process.env.JWT_REFRESH_TOKEN_EXPIRED_IN,
+  ip:process.env.IP,
   aws:{
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,

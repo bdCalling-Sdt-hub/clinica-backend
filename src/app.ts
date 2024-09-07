@@ -28,7 +28,7 @@ i18next
       caches: ['cookie'],
     },
     preload: ['en', 'es'],
-    fallbackLng: 'en', // default language en= english
+    fallbackLng: 'en',
   });
 
 
