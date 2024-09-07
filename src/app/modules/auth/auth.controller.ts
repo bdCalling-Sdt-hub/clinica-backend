@@ -19,7 +19,7 @@ const createPatient = catchAsync(async (req: Request, res: Response) => {
 
 const verifyAccount = catchAsync(async (req, res) => {
   const {token} = req.headers
-  const {accessToken, refreshToken} = await AuthServices.verifyAccount(token as string,req.body);
+  const {accessToken, refreshToken,role} = await AuthServices.verifyAccount(token as string,req.body);
   res.cookie('refreshToken', refreshToken, {
     secure: config.NODE_ENV === 'production',
     httpOnly: true,
@@ -33,6 +33,7 @@ const verifyAccount = catchAsync(async (req, res) => {
     message: 'Account verified successfully',
     data:{
       accessToken,
+      role
     }
   });
 });
@@ -51,7 +52,7 @@ const resendOtp = catchAsync(async (req, res) => {
 })
 const signIn = catchAsync(async (req, res) => {
     const result = await AuthServices.signInIntoDb(req.body);
-    const { refreshToken, accessToken} = result;
+    const { refreshToken, accessToken,role} = result;
 
     res.cookie('refreshToken', refreshToken, {
       secure: config.NODE_ENV === 'production',
@@ -66,19 +67,21 @@ const signIn = catchAsync(async (req, res) => {
       message: 'Sign Up successfully!',
       data: {
         accessToken,
+        role
       },
     });
 });
 
 const refreshToken = catchAsync(async (req, res) => {
-  const { refreshToken } = req.cookies;
+  const { refreshToken,role } = req.cookies;
     const {accessToken} = await AuthServices.refreshToken(refreshToken);
     sendResponse(req,res, {
         statusCode: httpStatus.OK,
         success: true,
         message: "Access token successfully",
         data: {
-          accessToken
+          accessToken,
+          role
         }
     }) 
 });
@@ -110,7 +113,7 @@ const forgetPassword = catchAsync(async (req, res) => {
 
 const resetPassword = catchAsync(async (req, res) => {
   const token = req.headers.token
-  const {accessToken,refreshToken} = await AuthServices.resetPassword(token as string, req.body);
+  const {accessToken,refreshToken,role} = await AuthServices.resetPassword(token as string, req.body);
   res.cookie('refreshToken', refreshToken, {
     secure: config.NODE_ENV === 'production',
     httpOnly: true,
@@ -124,6 +127,7 @@ const resetPassword = catchAsync(async (req, res) => {
     message: 'Password reset successfully!',
     data: {
       accessToken,
+      role
     },
   });
 })

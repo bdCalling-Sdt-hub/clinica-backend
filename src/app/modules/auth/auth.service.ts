@@ -110,10 +110,6 @@ const verifyAccount = async (token:string,payload:{email:string,otp:number}) => 
     throw new AppError(httpStatus.BAD_REQUEST, "Account is already verified");
   }
 
-  console.log(userData)
-
-  console.log(payload.otp,userData.validation?.otp)
-
   if (userData.validation?.otp !== payload.otp) {
     throw new AppError(httpStatus.UNAUTHORIZED, "Invalid Otp");
   }
@@ -136,7 +132,8 @@ const verifyAccount = async (token:string,payload:{email:string,otp:number}) => 
 
     return {
       accessToken,
-      refreshToken
+      refreshToken,
+      role:userData.role
     }
 }
 
@@ -223,6 +220,7 @@ const signInIntoDb = async (payload:{email:string,password:string}) => {
   return {
     accessToken,
     refreshToken,
+      role:userData.role
   };
 }
 
@@ -254,7 +252,8 @@ const refreshToken = async (refreshToken:string) => {
     config.access_token_expire_in as string,
   );
   return {
-    accessToken
+    accessToken,
+      role:userData.role
   }
 }
 
@@ -359,6 +358,7 @@ const resetPassword = async (token:string, payload:{email:string,otp:string,pass
   return {
     accessToken,
     refreshToken,
+    role:userData.role
   };
 }
 
