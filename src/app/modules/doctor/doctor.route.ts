@@ -10,10 +10,10 @@ const upload = multer({ storage });
 
 const router = Router();
 
-router.get("/doctor-list", auth("admin","patient","doctor"), DoctorControllers.getDoctors);
+router.get("/doctor-list", DoctorControllers.getDoctors);
 router.get("/profile", auth("doctor"), DoctorControllers.getProfile);
 router.post("/create", auth("admin"),validateRequest(DoctorValidations.createDoctorValidation), DoctorControllers.createDoctor);
-router.get("/:slug", auth("admin","patient","doctor"), DoctorControllers.getSingleDoctor);
+router.get("/:slug", DoctorControllers.getSingleDoctor);
 router.patch("/update-profile", auth("doctor"),  
 upload.single('profilePicture'),
 async(req,res,next ) => {

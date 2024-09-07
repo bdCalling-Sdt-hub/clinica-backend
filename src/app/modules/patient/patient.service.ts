@@ -14,7 +14,7 @@ import mongoose from "mongoose";
 import { generateSlug } from "../../utils/generateSlug";
 
 const getAllPatientsFromDb = async(query: Record<string, unknown>) => {
-  const userFields = (query?.userFields as string).split(",").join(" ");
+  const userFields = (query?.userFields as string)?.split(",").join(" ");
 
   if (query?.userFields) {
     delete query.userFields
@@ -66,7 +66,6 @@ const getPatientProfileFromDb = async(user:TTokenUser) => {
 }
 
 const updatePatientProfileIntoDb = async(user:TTokenUser,payload:Partial<TPatient> & Partial<TUser>) => {
-
   const userUpdatedData:Partial<TUser> = {} 
   const {
     name,

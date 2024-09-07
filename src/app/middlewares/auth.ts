@@ -19,7 +19,7 @@ const auth = (...requiredRole: TUserRole[]) => {
     // VERIFY TOKEN
     let decode;
     try {
-      decode = jwt.verify(token.split(" ")[1], config.jwt_access_secret as string) as TTokenUser;
+      decode = jwt.verify(token?.split(" ")[1], config.jwt_access_secret as string) as TTokenUser;
     } catch (error) {
       throw new AppError(httpStatus.UNAUTHORIZED, "Session Expired");
     }

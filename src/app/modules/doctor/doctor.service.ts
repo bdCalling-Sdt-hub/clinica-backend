@@ -80,7 +80,7 @@ const createDoctorFromDb = async (payload: TDoctor & TUser) => {
 
 const getDoctorsFromDb = async (query:Record<string,unknown>) => {
 
-  const userFields = (query?.userFields as string).split(",").join(" ");
+  const userFields = (query?.userFields as string)?.split(",").join(" ");
 
   if (query?.userFields) {
     delete query.userFields
