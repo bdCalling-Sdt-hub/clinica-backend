@@ -44,19 +44,21 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
     message = simplifiedError?.message;
     errorSources = simplifiedError?.errorSources;
   } else if (error instanceof AppError) {
+      console.log(error,"error")
     
     const messageFirstWord = error.message.split(" ")[0];
-    if (messageFirstWord === "E11000") {
+    const isDuplicateError = error.message.split(" ").find(word => word === "E11000");
+    if (messageFirstWord === "E11000" || isDuplicateError) {
       const regex = /index:\s(\w+)_\d+\sdup\skey:\s\{\s(\w+):\s"(.*?)"\s\}/;
       const match = error.message.match(regex);
       if (match) {
         const field = match[2];
         const value = match[3];
-        message = `${field} ${value} is already exists`;
+        message = `${field} '${value}' is already exists`;
         errorSources = [
           {
             path: "",
-            message: `${field} ${value} is already exists`,
+            message: `${field} '${value}' is already exists`,
           },
         ];
       }
@@ -73,7 +75,6 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
     }
   } 
   else if (error instanceof Error) {
-    console.log(error)
     message = error?.message;
     errorSources = [
       {

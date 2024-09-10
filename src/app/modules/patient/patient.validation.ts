@@ -42,9 +42,16 @@ const updatePatient = z.object({
     })
   })
 
+  const setupAlertValidation = z.object({
+    body: z.object({
+      type: z.enum(["bloodPressure", "glucose", "weight"]),
+      alert: z.boolean().optional().default(false),
+    }).strict()
+  })
 
 export const PatientValidation = {
   createPatient,
   updatePatient,
-  patientActionValidation
+  patientActionValidation,
+  setupAlertValidation
 };

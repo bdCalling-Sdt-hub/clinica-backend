@@ -3,7 +3,7 @@ import { TPatient } from "./patient.interface";
 
 // Patient Schema
 const PatientSchema = new Schema<TPatient>({
-    user: { type: Schema.Types.ObjectId, ref: "User", required: true, },
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true,unique:true },
     slug: { type: String, required: true, },
     dateOfBirth: { type: String, default: null },
     bloodGroup: { type: String, enum: ["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"], default: null },
@@ -23,6 +23,9 @@ const PatientSchema = new Schema<TPatient>({
     higherRiskOfPreeclampsia: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
     isDelete: { type: Boolean, default: false },
+    bloodPressureAlert: { type: Boolean, default: false },
+    glucoseAlert: { type: Boolean, default: false },
+    weightAlert: { type: Boolean, default: false },
 }, {
     timestamps: true, 
 });

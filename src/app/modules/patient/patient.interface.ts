@@ -21,6 +21,9 @@ export interface TPatient extends Document  {
     gestationalAge?:number
     isActive: boolean;
     isDelete:boolean;
+    bloodPressureAlert:boolean;
+    glucoseAlert:boolean;
+    weightAlert:boolean;
 }
 
 

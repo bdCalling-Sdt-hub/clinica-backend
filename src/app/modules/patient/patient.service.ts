@@ -172,11 +172,32 @@ const deleteMyAccountFromDb = async(user:TTokenUser) => {
       }
 }
 
+const setupAlertIntoDb = async(user:TTokenUser,payload:{type:"bloodPressure" | "glucose" | "weight", alert:boolean})  => {
+  const userData = await UserModel.findOne({email:user.email});
+  if (!userData) {
+    throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
+  }
+
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+    await UserModel.findOneAndUpdate({email:user.email},{[payload.type]:payload.alert},{session});
+    await session.commitTransaction();
+    session.endSession();
+    return null
+  } catch (error:any) {
+    await session.abortTransaction();
+    session.endSession();
+    throw new AppError(httpStatus.BAD_REQUEST, error.message);
+  }
+}
+
 export const PatientServices = {
     getAllPatientsFromDb,
     getSinglePatientFromDb,
     getPatientProfileFromDb,
     updatePatientProfileIntoDb,
     deleteMyAccountFromDb,
-    patientActionForAdmin
+    patientActionForAdmin,
+    setupAlertIntoDb
 }

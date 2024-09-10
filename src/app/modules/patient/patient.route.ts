@@ -48,6 +48,9 @@ router.patch("/update-profile",
     PatientController.updatePatientProfile
 )
 
+
+
+router.patch("/setup-alert", auth("patient"), validateRequest(PatientValidation.setupAlertValidation), PatientController.setupAlert);
 router.patch("/action/:slug", auth("admin"),  validateRequest(PatientValidation.patientActionValidation), PatientController.patientActionForAdmin);
 router.delete("/delete-my-account", auth("patient"), PatientController.deleteMyAccount);
 

@@ -69,6 +69,18 @@ const patientActionForAdmin = catchAsync(async (req, res) => {
       });
 })
 
+const setupAlert = catchAsync(async (req, res) => {
+    const user = (req as CustomRequest).user
+    const result = await PatientServices.setupAlertIntoDb(user,req.body);
+    sendResponse(req,res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Alert setup successfully',
+        data:result
+      });
+})
+
+
 
 export const PatientController = {
     getPatients,
@@ -76,6 +88,7 @@ export const PatientController = {
     getPatientProfile,
     updatePatientProfile,
     deleteMyAccount,
-    patientActionForAdmin
+    patientActionForAdmin,
+    setupAlert
 }
 

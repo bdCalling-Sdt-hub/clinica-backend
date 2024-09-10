@@ -3,6 +3,11 @@ import { TNotification } from "./notification.interface";
 
 const NotificationSchema = new Schema<TNotification>(
     {
+        user:{
+            tpe:Schema.Types.ObjectId,
+            ref:"User",
+            required:true
+        },
         type:{
             type:String,
             required:true
@@ -22,7 +27,7 @@ const NotificationSchema = new Schema<TNotification>(
         link:{
             type:String,
             default:null
-        }
+        },
     },
     {
         timestamps:true
