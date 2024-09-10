@@ -21,6 +21,7 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
   ];
 
   // const language = req.headers?.['accept-language']
+  // console.log(error)
 
   if (error instanceof ZodError) {
     const simplifiedError = handleZodError(error);
@@ -43,6 +44,24 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
     message = simplifiedError?.message;
     errorSources = simplifiedError?.errorSources;
   } else if (error instanceof AppError) {
+    
+    const messageFirstWord = error.message.split(" ")[0];
+    if (messageFirstWord === "E11000") {
+      const regex = /index:\s(\w+)_\d+\sdup\skey:\s\{\s(\w+):\s"(.*?)"\s\}/;
+      const match = error.message.match(regex);
+      if (match) {
+        const field = match[2];
+        const value = match[3];
+        message = `${field} ${value} is already exists`;
+        errorSources = [
+          {
+            path: "",
+            message: `${field} ${value} is already exists`,
+          },
+        ];
+      }
+    } else {
+
     statusCode = error?.statusCode;
     message = error.message;
     errorSources = [
@@ -51,7 +70,10 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
         message: error.message,
       },
     ];
-  } else if (error instanceof Error) {
+    }
+  } 
+  else if (error instanceof Error) {
+    console.log(error)
     message = error?.message;
     errorSources = [
       {
@@ -65,7 +87,8 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
     success: false,
     message:  req.t(message),
     errorSources,
-    stack: config.NODE_ENV === "development" ? error?.stack : null,
+    // stack: config.NODE_ENV === "development" ? error?.stack : null,
+    error,
   });
 };
 

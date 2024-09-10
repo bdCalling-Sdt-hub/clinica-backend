@@ -320,8 +320,8 @@ const forgetPasswordIntoDb = async (email:string) => {
     }
 }
 
-const resetPassword = async (token:string, payload:{email:string,otp:string,password:string}) => {
-  const decode = jwt.verify(token, config.jwt_access_secret as Secret) as TTokenUser
+const resetPassword = async (token:string, payload:{password:string}) => {
+  const decode = jwt.verify(token, config.jwt_reset_secret as Secret) as TTokenUser
   const userData = await UserModel.findOne({ email: decode.email });
 
   if (!userData) {
@@ -333,9 +333,8 @@ const resetPassword = async (token:string, payload:{email:string,otp:string,pass
   if (!userData.isActive) {
     throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
   }
-
-  if (payload.otp !== userData.validation?.otp.toString()) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Invalid Otp");
+  if (!userData.validation?.isVerified) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
   }
 
   

@@ -46,5 +46,5 @@ export const AuthValidations = {
     forgetPasswordValidation,
     optValidation,
     resendOtpValidation,
-    changePasswordValidation
+    changePasswordValidation,
 }
