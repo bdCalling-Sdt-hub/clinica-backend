@@ -1,6 +1,6 @@
-import { Schema } from "mongoose";
+import { Document, Schema } from "mongoose";
 
-export type TDoctor = {
+export interface TDoctor extends Document {
     user: Schema.Types.ObjectId;
     slug: string
     title: string;

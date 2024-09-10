@@ -86,7 +86,7 @@ const getDoctorsFromDb = async (query:Record<string,unknown>) => {
     delete query.userFields
   }
 
-  const doctorQuery = new QueryBuilder(DoctorModel.find().populate({path:"user",select:userFields}),query).search(["slug" , "title", "experience", "address", "about"]).filter().sort().paginate().fields();
+  const doctorQuery = new QueryBuilder(DoctorModel,DoctorModel.find().populate({path:"user",select:userFields}),query).search(["slug" , "title", "experience", "address", "about"]).filter().sort().paginate().fields();
     const result = await doctorQuery.modelQuery;
     const meta = await doctorQuery.countTotal();
 

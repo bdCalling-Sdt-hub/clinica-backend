@@ -19,8 +19,11 @@ const getAllPatientsFromDb = async(query: Record<string, unknown>) => {
   if (query?.userFields) {
     delete query.userFields
   }
-
-    const patientQuery = new QueryBuilder(PatientModel.find().populate({path:"user",select:userFields}),query).search(["dateOfBirth","bloodGroup",]).filter().sort().paginate().fields();
+    const patientQuery = new QueryBuilder(
+      PatientModel,
+    PatientModel.find().populate({ path: "user", select: userFields }), 
+    query
+  ).search(["name", "slug",]).filter().sort().paginate().fields();
     const meta = await patientQuery.countTotal();
     const patients = await patientQuery.modelQuery;
     return { meta, patients };

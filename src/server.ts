@@ -11,7 +11,9 @@ async function main() {
     await mongoose.connect(config.database_url as string);
     seedAdmin();
 
-    server = app.listen(Number(config.port),config.ip as string, () => {
+    server = app.listen(Number(config.port),
+    // config.ip as string,
+     () => {
       console.log(`Example app listening on port ${config.port}`);
     });
   } catch (error) {
