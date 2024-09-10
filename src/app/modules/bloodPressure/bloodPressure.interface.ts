@@ -1,6 +1,6 @@
-import { Schema } from "mongoose";
+import { Document, Schema } from "mongoose";
 
-export type TBloodPressure = {
+export interface TBloodPressure extends Document {
     user: Schema.Types.ObjectId;
     date: string ;
     time:string;

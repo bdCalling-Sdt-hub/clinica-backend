@@ -49,10 +49,10 @@ const getConnectionRequestFromDb = async (user:TTokenUser,query:Record<string,un
     if (!userData.isActive) {
         throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
     }
-    const connectionQuery = new QueryBuilder(ConnectionModel.find({
+    const connectionQuery = new QueryBuilder(ConnectionModel,ConnectionModel.find({
         doctor: userData._id
     }).populate("patient doctor"),query).search(["patient","doctor"]).filter().sort().paginate().fields();
-    const result = await connectionQuery.modelQuery.lean();
+    const result = await connectionQuery.modelQuery
     return result;
 }
 
@@ -68,10 +68,10 @@ const getMyConnectionRequest = async (user:TTokenUser, query:Record<string,unkno
     if (!userData.isActive) {
         throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
     }
-   const connectionQuery = new QueryBuilder(ConnectionModel.find({
+   const connectionQuery = new QueryBuilder(ConnectionModel,ConnectionModel.find({
         patient: userData._id
    }).populate("patient doctor"),query).search(["doctor patient"]).filter().sort().paginate().fields();
-   const result = await connectionQuery.modelQuery.lean();
+   const result = await connectionQuery.modelQuery
     return result;
 }
 

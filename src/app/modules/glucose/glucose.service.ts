@@ -46,8 +46,8 @@ const getGlucoseFromDb = async (user:TTokenUser, query:Record<string,unknown>) =
       if (!userData.validation?.isVerified) {
         throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
       }
-      const glucoseQuery = new QueryBuilder(GlucoseModel.find({user:userData._id}), query).filter();
-      const result = await glucoseQuery.modelQuery.lean();
+      const glucoseQuery = new QueryBuilder(GlucoseModel,GlucoseModel.find({user:userData._id}), query).filter();
+      const result = await glucoseQuery.modelQuery;
     return result;
 } 
 

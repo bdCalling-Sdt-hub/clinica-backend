@@ -46,8 +46,8 @@ const getWeightsFromDb = async (user:TTokenUser,query:Record<string,unknown>) =>
         throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
       }
 
-      const weightQuery = new QueryBuilder(WeightModel.find({user:userData._id}),query).filter()
-    const result = await weightQuery.modelQuery.lean();
+      const weightQuery = new QueryBuilder(WeightModel,WeightModel.find({user:userData._id}),query).filter()
+    const result = await weightQuery.modelQuery
     return result;
 } 
 

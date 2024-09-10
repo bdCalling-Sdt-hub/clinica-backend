@@ -1,6 +1,6 @@
-import { Schema } from "mongoose";
+import { Document, Schema } from "mongoose";
 
-export type TConnection = {
+export interface TConnection extends Document {
     patient: Schema.Types.ObjectId;
     doctor: Schema.Types.ObjectId;
     status: TConnectionStatus;

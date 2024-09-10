@@ -48,9 +48,9 @@ const getBloodPressuresFromDb = async (user:TTokenUser,query:Record<string,unkno
         throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
       }
 
-      const bloodPressureQuery = new QueryBuilder(BloodPressureModel.find({user:userData._id}),query).filter();
+      const bloodPressureQuery = new QueryBuilder(BloodPressureModel,BloodPressureModel.find({user:userData._id}),query).filter();
 
-    const result = await bloodPressureQuery.modelQuery.lean();
+    const result = await bloodPressureQuery.modelQuery
     return result;
 } 
 

@@ -64,7 +64,6 @@ const getSinglePatientFromDb = async(slug:string, query: Record<string, unknown>
 const getPatientProfileFromDb = async(user:TTokenUser) => {
     const userData = await UserModel.findOne({email:user.email})
     const patientData = await PatientModel.findOne({user:userData?._id}).populate("user");
-    console.log(userData,patientData)
     return patientData
 }
 

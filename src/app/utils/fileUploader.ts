@@ -12,7 +12,6 @@ import fs from "fs";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    console.log(file,"from file uploader")
     if (!fs.existsSync(path.join(process.cwd(), "uploads"))) {
       fs.mkdirSync(path.join(process.cwd(), "uploads"));
     }
@@ -21,7 +20,6 @@ const storage = multer.diskStorage({
   },
 
   filename: function (req, file, cb) {
-    console.log(file);
     cb(null, file.originalname);
   },
 });

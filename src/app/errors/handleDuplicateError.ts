@@ -3,7 +3,6 @@ import { TErrorSources, TGenericErrorResponse } from "../types/error";
 
 const handleDuplicateError = (err: any): TGenericErrorResponse => {
   const statusCode = httpStatus.BAD_REQUEST;
-  console.log(statusCode,"from dublicate ")
   const [errorValue] = Object.values(err.keyValue);
 
   const errorSources: TErrorSources = [

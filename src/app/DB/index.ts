@@ -4,7 +4,7 @@ import { TUser } from "../modules/user/user.interface";
 import UserModel from "../modules/user/user.model";
 import bcrypt from "bcrypt";
 
-const admin: TUser = {
+const admin: any = {
   name: "Admin",
   gender: "male",
   isActive: true,
