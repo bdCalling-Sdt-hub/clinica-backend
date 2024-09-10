@@ -144,6 +144,7 @@ class QueryBuilder<T extends Document> {
   // Filter method
   filter() {
     const queryObj = { ...this.query };
+    console.log(queryObj)
     const excludeFields = ["searchTerm", "sort", "limit", "page", "fields"];
     excludeFields.forEach((element) => delete queryObj[element]);
 

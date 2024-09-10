@@ -26,7 +26,20 @@ const getWeights = catchAsync(async(req,res) => {
     })
 })
 
+
+const getLatestWeightData = catchAsync(async(req,res) => {
+    const user = (req as CustomRequest).user
+    const result = await WeightServices.getLatestWeightDataFromDb(user);
+    sendResponse(req,res,{
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Latest Weight fetched successfully",
+        data: result
+    })
+})
+
 export const WeightControllers = {
     createWeight,
-    getWeights
+    getWeights,
+    getLatestWeightData
 }

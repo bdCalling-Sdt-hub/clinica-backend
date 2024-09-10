@@ -6,4 +6,5 @@ export interface TBloodPressure extends Document {
     time:string;
     systolic: number;
     diastolic: number;
+    data: number;
 }

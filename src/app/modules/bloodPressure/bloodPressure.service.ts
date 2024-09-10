@@ -1,10 +1,10 @@
 import httpStatus from "http-status";
+import QueryBuilder from "../../builder/QueryBuilder";
 import AppError from "../../errors/AppError";
 import { TTokenUser } from "../../types/common";
 import UserModel from "../user/user.model";
 import { TBloodPressure } from "./bloodPressure.interface";
 import { BloodPressureModel } from "./bloodPressure.model";
-import QueryBuilder from "../../builder/QueryBuilder";
 
 const createBloodPressureIntoDb = async (user:TTokenUser,payload: TBloodPressure) => {
     const userData = await UserModel.findOne({ email: user.email }).lean();
@@ -21,8 +21,13 @@ const createBloodPressureIntoDb = async (user:TTokenUser,payload: TBloodPressure
         throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
       }
 
+      // MAP = [systolic blood pressure + (2 X diastolic blood pressure)] / 3
+
+      const map = (payload.systolic + (2 * payload.diastolic)) / 3
+
     const bloodPressureData = {
-        user: userData._id,
+      user: userData._id,
+        data:map,
         date: payload.date,
         time: payload.time,
         systolic: payload.systolic,
@@ -48,13 +53,63 @@ const getBloodPressuresFromDb = async (user:TTokenUser,query:Record<string,unkno
         throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
       }
 
-      const bloodPressureQuery = new QueryBuilder(BloodPressureModel,BloodPressureModel.find({user:userData._id}),query).filter();
-
-    const result = await bloodPressureQuery.modelQuery
+      const bloodPressureQuery = new QueryBuilder(BloodPressureModel,BloodPressureModel.find({user:userData._id}),query).filter()
+      const result = await bloodPressureQuery.modelQuery
+      console.log(result ,"result" )
     return result;
 } 
 
+
+const getLatestBloodPressureDataFromDb = async (user:TTokenUser) => {
+
+  const userData = await UserModel.findOne({ email: user.email }).lean();
+    if (!userData) {
+        throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
+      }
+      if (!userData.isActive) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
+      }
+      if (userData.isDelete) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
+      }
+      if (!userData.validation?.isVerified) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
+      }
+
+
+  const latestData = await BloodPressureModel.aggregate([
+    {
+      // Match documents by user
+      $match: { user: userData._id }
+    },
+    {
+      // Add a new field that combines date and time into a Date object
+      $addFields: {
+        combinedDateTime: {
+          $dateFromString: {
+            dateString: {
+              $concat: ["$date", "T", "$time", ":00"] // Combining into an ISO string
+            },
+            format: "%d-%m-%YT%H:%M:%S", // Adjusted format for dd-mm-yyyy and time
+            timezone: "UTC"
+          }
+        }
+      }
+    },
+    {
+      // Sort by the new combinedDateTime field in descending order
+      $sort: { combinedDateTime: -1 }
+    },
+    {
+      // Limit to only the most recent document
+      $limit: 1
+    }
+  ]).exec();
+  return latestData[0];
+};
+
 export const BloodPressureServices = {
     createBloodPressureIntoDb,
-    getBloodPressuresFromDb
+    getBloodPressuresFromDb,
+    getLatestBloodPressureDataFromDb
 }

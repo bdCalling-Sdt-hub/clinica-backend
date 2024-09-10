@@ -26,7 +26,19 @@ const getBloodPressures = catchAsync(async(req,res) => {
     })
 })
 
+const getLatestBloodPressureData = catchAsync(async(req,res) => {
+    const user = (req as CustomRequest).user
+    const result = await BloodPressureServices.getLatestBloodPressureDataFromDb(user);
+    sendResponse(req,res,{
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Latest Blood Pressure fetched successfully",
+        data: result
+    })
+})
+
 export const BloodPressureControllers = {
     createBloodPressure,
-    getBloodPressures
+    getBloodPressures,
+    getLatestBloodPressureData
 }
