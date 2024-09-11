@@ -12,7 +12,7 @@ async function main() {
     seedAdmin();
 
     server = app.listen(Number(config.port),
-    // config.ip as string,
+    config.ip as string,
      () => {
       console.log(`Example app listening on port ${config.port}`);
     });

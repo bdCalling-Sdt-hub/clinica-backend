@@ -44,15 +44,15 @@ const createBloodPressureIntoDb = async (user:TTokenUser,payload: TBloodPressure
     if (payload?.systolic >= 140) {
     
 
-   const notification = await sendNotification([userData.fcmToken],{
-      title: "High Blood Pressure",
-      body: `Your systolic blood pressure is ${payload.systolic} and diastolic blood pressure is ${payload.diastolic}. Your high blood pressure is high.`
-    })
+  //  const notification = await sendNotification([userData.fcmToken],{
+  //     title: "High Blood Pressure",
+  //     body: `Your systolic blood pressure is ${payload.systolic} and diastolic blood pressure is ${payload.diastolic}. Your high blood pressure is high.`
+  //   })
 
- await NotificationModel.create([{
-        user: userData._id,
-        notification
-      }],{session})
+//  await NotificationModel.create([{
+//         user: userData._id,
+//         notification
+//       }],{session})
     }
 
     //  if (payload?.diastolic >= 90) {
