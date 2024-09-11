@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 import { Server } from "http";
 import app from "./app";
 import seedAdmin from "./app/DB";
+import { refreshToken } from "firebase-admin/app";
+import { getAccessToken } from "./app/utils/getAccessToken";
 
 let server: Server;
 
@@ -12,7 +14,7 @@ async function main() {
     seedAdmin();
 
     server = app.listen(Number(config.port),
-    config.ip as string,
+    // config.ip as string,
      () => {
       console.log(`Example app listening on port ${config.port}`);
     });

@@ -24,7 +24,7 @@ export default {
     bucket: process.env.AWS_BUCKET
   },
   firebase:{
-    firebase_apikey:process.env.    FIREBASE_APIKEY,
+  firebase_apikey:process.env.    FIREBASE_APIKEY,
   firebase_authdomain:process.env.FIREBASE_AUTHDOMAIN,
   firebase_projectid:process.env.FIREBASE_PROJECTID,
   firebase_storagebucket:process.env.FIREBASE_STORAGEBUCKET,

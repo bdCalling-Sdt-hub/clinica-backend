@@ -1,13 +1,12 @@
 import httpStatus from "http-status";
+import mongoose from "mongoose";
 import QueryBuilder from "../../builder/QueryBuilder";
 import AppError from "../../errors/AppError";
 import { TTokenUser } from "../../types/common";
 import UserModel from "../user/user.model";
 import { TBloodPressure } from "./bloodPressure.interface";
 import { BloodPressureModel } from "./bloodPressure.model";
-import mongoose from "mongoose";
-import NotificationModel from "../notification/notification.model";
-import { sendNotification } from "src/app/utils/sendNotification";
+import { sendNotification } from "../notification/sendNotification";
 
 const createBloodPressureIntoDb = async (user:TTokenUser,payload: TBloodPressure) => {
     const userData = await UserModel.findOne({ email: user.email }).lean();
@@ -44,10 +43,15 @@ const createBloodPressureIntoDb = async (user:TTokenUser,payload: TBloodPressure
     if (payload?.systolic >= 140) {
     
 
-  //  const notification = await sendNotification([userData.fcmToken],{
-  //     title: "High Blood Pressure",
-  //     body: `Your systolic blood pressure is ${payload.systolic} and diastolic blood pressure is ${payload.diastolic}. Your high blood pressure is high.`
-  //   })
+   const notification = await sendNotification([userData.fcmToken],{
+    data: {
+      type: "bloodPressure",
+    },
+      title: "High Blood Pressure",
+      body: `Your systolic blood pressure is ${payload.systolic} and diastolic blood pressure is ${payload.diastolic}. Your high blood pressure is high.`
+    })
+
+    console.log(notification)
 
 //  await NotificationModel.create([{
 //         user: userData._id,
