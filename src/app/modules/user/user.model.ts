@@ -19,7 +19,9 @@ const UserSchema = new Schema<TUser>({
     role: { type: String, enum: ["admin", "patient", "doctor"],required:true },
     isActive: { type: Boolean, default: true },
     isDelete: { type: Boolean, default: false },
+    fcmToken: { type: String, default: null },
     validation: {type:validationSchema},
+
 },{
     timestamps: true
 });

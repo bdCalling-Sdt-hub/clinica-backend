@@ -12,6 +12,7 @@ export interface TUser extends Document  {
     isActive: boolean;
     isDelete: boolean;
     validation?:TValidation
+    fcmToken?:string
 }
 
 export type TValidation = {

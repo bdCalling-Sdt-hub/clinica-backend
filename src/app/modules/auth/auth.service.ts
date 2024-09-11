@@ -182,7 +182,7 @@ const resendOtp = async (payload:{email:string}) => {
   }
 }
 
-const signInIntoDb = async (payload:{email:string,password:string}) => {
+const signInIntoDb = async (payload:{email:string,password:string,fcmToken:string}) => {
   const userData = await UserModel.findOne({ email: payload.email }).select("+password").lean();
 
   if (!userData) {
@@ -203,6 +203,12 @@ const signInIntoDb = async (payload:{email:string,password:string}) => {
 
   if (userData.validation?.isVerified === false) {
     throw new AppError(httpStatus.BAD_REQUEST, "Account is not verified");
+  }
+
+  const userUpdatedInfo = await UserModel.findOneAndUpdate({ email: userData.email }, { fcmToken: payload.fcmToken },{ new: true,runValidators:true }).lean();
+
+  if (!userUpdatedInfo.fcmToken) {
+    throw new AppError(httpStatus.BAD_REQUEST, "failed to update fcm token");
   }
 
   const jwtPayload = { email: userData.email, role: userData.role };

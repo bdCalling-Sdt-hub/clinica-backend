@@ -7,4 +7,6 @@ export type TNotification ={
     message:string;
     isRead:boolean;
     link?:string;
+    date?:Date
+    time?:string
 }

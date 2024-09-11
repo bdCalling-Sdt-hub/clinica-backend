@@ -22,5 +22,13 @@ export default {
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     region: process.env.AWS_REGION,
     bucket: process.env.AWS_BUCKET
+  },
+  firebase:{
+    firebase_apikey:process.env.    FIREBASE_APIKEY,
+  firebase_authdomain:process.env.FIREBASE_AUTHDOMAIN,
+  firebase_projectid:process.env.FIREBASE_PROJECTID,
+  firebase_storagebucket:process.env.FIREBASE_STORAGEBUCKET,
+  firebase_messagingsenderid:process.env.FIREBASE_MESSAGINGSENDERID,
+  firebase_appid:process.env.FIREBASE_APPID,
   }
 };

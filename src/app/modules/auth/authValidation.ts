@@ -3,7 +3,8 @@ import { z } from "zod";
 const signInValidation = z.object({
    body:z.object({
     email: z.string({required_error:"Email is required"}).email({ message: "Invalid email address" }),
-    password: z.string()
+    password: z.string({required_error:"Password is required"}),
+    fcmToken: z.string({required_error:"FCM token is required"}),
    })
 });
 const refreshTokenValidation = z.object({

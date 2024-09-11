@@ -64,7 +64,7 @@ const getSinglePatientFromDb = async(slug:string, query: Record<string, unknown>
 const getPatientProfileFromDb = async(user:TTokenUser) => {
     const userData = await UserModel.findOne({email:user.email})
     const patientData = await PatientModel.findOne({user:userData?._id}).populate("user");
-    return patientData
+    return patientData;
 }
 
 const updatePatientProfileIntoDb = async(user:TTokenUser,payload:Partial<TPatient> & Partial<TUser>) => {
