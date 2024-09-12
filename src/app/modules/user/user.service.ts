@@ -6,7 +6,7 @@ import { TUser } from "./user.interface";
 import UserModel from "./user.model";
 
 const getAllUsersFromDb = async (query: Record<string, unknown>) => {
-    const patientQuery = new QueryBuilder(UserModel, UserModel.find({isDelete:false}),query).search(["name", "email", "role"]).filter().sort().paginate().fields();
+    const patientQuery = new QueryBuilder(UserModel, UserModel.find({isDelete:false}),query).search(["name", "email", "role"],{}).filter().sort().paginate().fields();
     const meta = await patientQuery.countTotal();
     const patients = await patientQuery.modelQuery;
     return { meta, patients };

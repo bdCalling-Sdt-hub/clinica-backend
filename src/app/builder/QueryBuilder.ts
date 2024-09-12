@@ -86,21 +86,27 @@ class QueryBuilder<T extends Document> {
   }
 
   // Search method that handles both populated and non-populated fields
-  search(searchableField: string[], populatedFields: string[] = []) {
+  search(searchableField: string[], searchablePopulatedField: {
+    lookupFrom?: string;
+    localField?: string;
+    foreignField?: string;
+    lookupAs?: string;
+    populatedFields?: string[];
+  }) {
     const searchTerm = this.query?.searchTerm as string;
     if (searchTerm) {
-      if (populatedFields.length > 0) {
+      if (searchablePopulatedField?.populatedFields?.length > 0 && searchablePopulatedField?.lookupFrom) {
         // If populated fields exist, you need to use aggregation
         const searchQuery: PipelineStage[] = [];
 
         // Main model search fields
         const mainModelSearch = searchableField
-          .filter((field) => !populatedFields.includes(field)) // Exclude populated fields
+          .filter((field) => searchablePopulatedField?.populatedFields.includes(field)) // Exclude populated fields
           .map((field) => ({
             [field]: { $regex: searchTerm, $options: "i" },
           }));
 
-        if (mainModelSearch.length > 0) {
+        if (mainModelSearch.length > 0 && searchablePopulatedField?.lookupFrom) {
           searchQuery.push({
             $match: { $or: mainModelSearch },
           });
@@ -110,16 +116,16 @@ class QueryBuilder<T extends Document> {
         searchQuery.push(
           {
             $lookup: {
-              from: "users", // Replace with the actual collection name for the populated field
-              localField: "user",
-              foreignField: "_id",
-              as: "user",
+              from: searchablePopulatedField?.lookupFrom,
+              localField: searchablePopulatedField?.localField,
+              foreignField: searchablePopulatedField?.foreignField,
+              as: searchablePopulatedField?.lookupAs,
             },
           },
-          { $unwind: "$user" },
+          { $unwind: `${searchablePopulatedField?.lookupAs}` },
           {
             $match: {
-              $or: populatedFields.map((field) => ({
+              $or: searchablePopulatedField?.populatedFields.map((field) => ({
                 [`user.${field}`]: { $regex: searchTerm, $options: "i" },
               })),
             },

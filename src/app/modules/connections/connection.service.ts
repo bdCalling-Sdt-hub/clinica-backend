@@ -51,7 +51,12 @@ const getConnectionRequestFromDb = async (user:TTokenUser,query:Record<string,un
     }
     const connectionQuery = new QueryBuilder(ConnectionModel,ConnectionModel.find({
         doctor: userData._id
-    }).populate("patient doctor"),query).search(["patient","doctor"]).filter().sort().paginate().fields();
+    }).populate("patient doctor"),query).search(["patient","doctor"],{
+        lookupFrom: "users",
+        localField:"patient",
+        foreignField:"_id",
+        lookupAs: "patient",
+    }).filter().sort().paginate().fields();
     const result = await connectionQuery.modelQuery
     return result;
 }
@@ -70,7 +75,12 @@ const getMyConnectionRequest = async (user:TTokenUser, query:Record<string,unkno
     }
    const connectionQuery = new QueryBuilder(ConnectionModel,ConnectionModel.find({
         patient: userData._id
-   }).populate("patient doctor"),query).search(["doctor patient"]).filter().sort().paginate().fields();
+   }).populate("patient doctor"),query).search(["doctor patient"],{
+       lookupFrom: "users",
+       localField:"doctor",
+       foreignField:"_id",
+       lookupAs: "doctor",
+   }).filter().sort().paginate().fields();
    const result = await connectionQuery.modelQuery
     return result;
 }
