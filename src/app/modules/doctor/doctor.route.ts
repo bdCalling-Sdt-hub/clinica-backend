@@ -3,7 +3,7 @@ import { DoctorControllers } from "./doctor.controller";
 import auth from "../../middlewares/auth";
 import validateRequest from "../../middlewares/validateRequest";
 import { DoctorValidations } from "./doctor.validation";
-import { uploadToS3 } from "../../constrant/s3";
+import { uploadToS3 } from "../../constant/s3";
 import multer, { memoryStorage } from "multer";
 const storage = memoryStorage();
 const upload = multer({ storage });

@@ -7,4 +7,5 @@ export type TMessage = {
   chat: Schema.Types.ObjectId;
   sender: Schema.Types.ObjectId;
   receiver: Schema.Types.ObjectId;
+  isDelete: boolean;
 }

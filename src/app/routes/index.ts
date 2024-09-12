@@ -11,6 +11,7 @@ import { SettingsRoutes } from "../modules/settings/settings.route";
 import { ConnectionRoutes } from "../modules/connections/connection.route";
 import { ChatListServices } from "../modules/chatList/chatList.service";
 import { ChatListRoutes } from "../modules/chatList/chatList.route";
+import { MessageRoutes } from "../modules/massage/message.route";
 
 const router = Router();
 
@@ -57,6 +58,10 @@ route: GlucoseRoutes
 {
     path:"/chat-list",
     route: ChatListRoutes
+},
+{
+    path:"/message",
+    route: MessageRoutes
 }
 ];
 

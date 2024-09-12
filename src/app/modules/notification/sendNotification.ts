@@ -4,10 +4,10 @@ import AppError from '../../errors/AppError';
 import path from "path";
 // Initialize Firebase Admin with a service account
 
-const clinicaSericeAccountFile = path.join(process.cwd(), './firebase/clinica-serice-account-file.json');
+// const clinicaSericeAccountFile = path.join(process.cwd(), './firebase/clinica-serice-account-file.json');
 admin.initializeApp({
-  // credential: admin.credential.cert('./clinica-serice-account-file.json'),
-  credential: admin.credential.cert(clinicaSericeAccountFile),
+  credential: admin.credential.cert('./clinica-serice-account-file.json'),
+  // credential: admin.credential.cert(clinicaSericeAccountFile),
 });
 type NotificationPayload = {
   title: string;

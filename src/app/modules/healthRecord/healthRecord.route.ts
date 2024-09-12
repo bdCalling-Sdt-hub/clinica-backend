@@ -1,7 +1,7 @@
 import { Router } from "express";
 import httpStatus from "http-status";
 import multer, { memoryStorage } from "multer";
-import { uploadToS3 } from "../../constrant/s3";
+import { uploadToS3 } from "../../constant/s3";
 import AppError from "../../errors/AppError";
 import auth from "../../middlewares/auth";
 import { HealthRecordControllers } from "./healthRecord.controller";

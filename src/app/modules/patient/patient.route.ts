@@ -1,6 +1,6 @@
 import { Router } from "express";
 import multer, { memoryStorage } from "multer";
-import { uploadToS3 } from "../../constrant/s3";
+import { uploadToS3 } from "../../constant/s3";
 import auth from "../../middlewares/auth";
 import { PatientController } from "./patient.controller";
 import { PatientValidation } from "./patient.validation";
