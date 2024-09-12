@@ -26,8 +26,10 @@ const getChatList = catchAsync(async (req, res) => {
     })
 });
 
-const addChatList = catchAsync(async (req, res) => {
-    const result = await ChatListServices.addUserIntoChatList(req.body);
+const deleteUserFromChatList = catchAsync(async (req, res) => {
+    const userId = req.params.userId
+    const user = (req as CustomRequest).user
+    const result = await ChatListServices.deleteUserFromChatList(user,userId);
     sendResponse(req, res, {
         statusCode: httpStatus.OK,
         success: true,
@@ -39,5 +41,5 @@ const addChatList = catchAsync(async (req, res) => {
 export const ChatListController = {
     createChatList,
     getChatList,
-    addChatList
+    deleteUserFromChatList
 }

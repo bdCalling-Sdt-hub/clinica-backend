@@ -1,11 +1,10 @@
-import { TTokenUser } from "src/app/types/common";
-import { TChatList } from "./chatList.interface";
-import AppError from "../../errors/AppError";
-import UserModel from "../user/user.model";
 import httpStatus from "http-status";
 import mongoose from "mongoose";
+import { TTokenUser } from "src/app/types/common";
+import AppError from "../../errors/AppError";
+import UserModel from "../user/user.model";
+import { TChatList } from "./chatList.interface";
 import ChatListModel from "./chatList.model";
-import QueryBuilder from "../../builder/QueryBuilder";
 
 const createChatListIntoDb = async (user:TTokenUser,payload: TChatList) => {
      const userData = await UserModel.findOne({email:user.email});
@@ -22,9 +21,8 @@ const createChatListIntoDb = async (user:TTokenUser,payload: TChatList) => {
         throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
       }
 
-      const participantsWithMe = [...payload.participants, userData._id];
-      console.log(participantsWithMe)
-
+      const participantsWithMe = [...payload.participants, {user:userData._id}];
+        console.log(participantsWithMe)
       const session = await mongoose.startSession();
       try {
         session.startTransaction();
@@ -46,40 +44,91 @@ const createChatListIntoDb = async (user:TTokenUser,payload: TChatList) => {
       }
 }
 
-const getChatListFromDb = async (user:TTokenUser,query:Record<string,unknown>) => {
-    const userData = await UserModel.findOne({email:user.email});
-    if (!userData) {
-        throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
-      }
-      if (!userData.isActive) {
-        throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
-      }
-      if (userData.isDelete) {
-        throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
-      }
-      if (!userData.validation?.isVerified) {
-        throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
-      }
+const getChatListFromDb = async (user: TTokenUser, query: Record<string, unknown>) => {
+  const userData = await UserModel.findOne({ email: user.email });
+  if (!userData) {
+    throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
+  }
+  if (!userData.isActive) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
+  }
+  if (userData.isDelete) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
+  }
+  if (!userData.validation?.isVerified) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
+  }
 
-      console.log(userData)
+  // Retrieve the chat list
+  const chatsList = await ChatListModel.findOne({
+    'participants.user': userData._id,
+  }).populate({
+    path: 'participants.user',
+    select: 'name slug email profilePic gender contact role _id',
+    match: { _id: { $ne: userData._id } }, // Exclude the current user
+  });
 
-       const chatsList = await ChatListModel.find({
-        participants: { $all: userData._id },
-      }).populate({
-        path: 'participants',
-        select: 'name email profilePicture slug role _id contact gender',
-        // match: { _id: { $ne: userData._id } },
-      });
+  // If chatList exists, filter out participants with isDelete: true
+  if (chatsList) {
+    chatsList.participants = chatsList.participants.filter(participant => !participant.isDelete);
+  }
 
-    return chatsList
+  return chatsList;
+};
+
+
+const deleteUserFromChatList = async (user: TTokenUser, userId: string) => {
+  const userData = await UserModel.findOne({ email: user.email });
+  if (!userData) {
+    throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
+  }
+  if (!userData.isActive) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
+  }
+  if (userData.isDelete) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
+  }
+  if (!userData.validation?.isVerified) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
+  }
+
+  const myList = await ChatListModel.findOne({
+    'participants.user': userData._id,
+  });
+
+  if (!myList) {
+    throw new AppError(httpStatus.NOT_FOUND, "Chat List Not Found");
+  }
+
+  const deletable = myList.participants.find(item => {
+    return userId === item.user.toString();
+  });
+
+  if (!deletable) {
+    throw new AppError(httpStatus.NOT_FOUND, "User Not Found in Chat List");
+  }
+
+  await ChatListModel.findOneAndUpdate(
+    {
+      'participants.user': userId,
+    },
+    {
+      $set: { 'participants.$[elem].isDelete': true },
+    },
+    {
+      arrayFilters: [{ 'elem.user': userId }],
+      new: true, 
+      runValidators:true
     }
+  );
 
-const addUserIntoChatList = async (userId:string) => {
-console.log(userId);
-}
+  return null
+};
+
+
 
 export const ChatListServices = {
     createChatListIntoDb,
-    addUserIntoChatList,
+    deleteUserFromChatList,
     getChatListFromDb
 }

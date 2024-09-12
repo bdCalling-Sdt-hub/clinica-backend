@@ -10,7 +10,7 @@ const auth = new GoogleAuth({
 export async function getAccessToken() {
   const client = await auth.getClient();
   const token = await client.getAccessToken();
-  console.log('OAuth2 Token:', token.token);
+  // console.log('OAuth2 Token:', token.token);
   return token.token
 }
 

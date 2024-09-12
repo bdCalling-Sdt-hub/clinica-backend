@@ -51,7 +51,6 @@ const createBloodPressureIntoDb = async (user:TTokenUser,payload: TBloodPressure
       body: `Your systolic blood pressure is ${payload.systolic} and diastolic blood pressure is ${payload.diastolic}. Your high blood pressure is high.`
     })
 
-    console.log(notification)
 
 //  await NotificationModel.create([{
 //         user: userData._id,

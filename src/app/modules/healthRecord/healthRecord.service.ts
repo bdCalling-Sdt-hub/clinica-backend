@@ -24,7 +24,6 @@ const uploadHealthRecordIntoDb = async (user:TTokenUser,healthRecordFile:THealth
   if (!userData.validation?.isVerified) {
     throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
   }
-  console.log(healthRecordFile.file)
 
   const healthRecord = await HealthRecordModel.create({
     user: userData._id,

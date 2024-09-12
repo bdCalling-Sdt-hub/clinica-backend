@@ -5,6 +5,6 @@ const router = Router()
 
 router.get("/get-chat-list", auth("doctor", "patient"), ChatListController.getChatList);
 router.post("/create", auth("doctor", "patient"), ChatListController.createChatList);
-router.post("/add", auth("doctor", "patient"), ChatListController.addChatList);
+router.delete("/delete/:userId", auth("doctor", "patient"), ChatListController.deleteUserFromChatList);
 
 export const ChatListRoutes = router;
