@@ -8,6 +8,8 @@ const storage = memoryStorage();
 const upload = multer({ storage });
 
 const router = Router();
+router.get("/my-messages/:receiverId", auth("doctor", "patient"), MessageControllers.getMessageByReceiver);
+router.get("/:chatId", auth("doctor", "patient"), MessageControllers.getMessages);
 router.post("/create", auth("doctor", "patient"), upload.single('file'),
     async(req,res,next ) => {
         try {

@@ -8,4 +8,6 @@ export type TMessage = {
   sender: Schema.Types.ObjectId;
   receiver: Schema.Types.ObjectId;
   isDelete: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }

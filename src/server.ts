@@ -1,13 +1,12 @@
-import config from "./app/config";
+import { Server, createServer } from "http";
 import mongoose from "mongoose";
-import { Server } from "http";
 import app from "./app";
+import config from "./app/config";
 import seedAdmin from "./app/DB";
-import { refreshToken } from "firebase-admin/app";
-import { getAccessToken } from "./app/utils/getAccessToken";
+import initializeSocketIo from "./socket";
 
 let server: Server;
-
+export const io = initializeSocketIo(createServer(app))
 async function main() {
   try {
     await mongoose.connect(config.database_url as string);
@@ -18,6 +17,13 @@ async function main() {
      () => {
       console.log(`Example app listening on port ${config.port}`);
     });
+
+    io.listen(8000);
+    console.log(
+      `Socket is listening on port ${config.ip} : ${8000}`,
+    );
+    
+    global.socketio = io
   } catch (error) {
     console.log(error);
   }

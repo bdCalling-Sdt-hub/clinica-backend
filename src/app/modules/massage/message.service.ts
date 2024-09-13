@@ -5,7 +5,6 @@ import UserModel from "../user/user.model";
 import httpStatus from "http-status";
 import MessageModel from "./message.model";
 
-
 const createMessageIntoDb = async (user:TTokenUser,payload: TMessage) => {
      const userData = await UserModel.findOne({ email: user.email }).lean();
   if (!userData) {
@@ -39,9 +38,56 @@ const createMessageIntoDb = async (user:TTokenUser,payload: TMessage) => {
   return message;
 }
 
+const getMessagesFromDb = async (user:TTokenUser,chatId:string) => {
+    const userData = await UserModel.findOne({ email: user.email }).lean();
+  if (!userData) {
+    throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
+  }
+  if (!userData.isActive) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
+  }
+  if (userData.isDelete) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
+  }
+  if (!userData.validation?.isVerified) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
+  }
+
+  const messages = await MessageModel.find({$or:[{sender:userData._id},{receiver:userData._id}],chat:chatId}).populate({
+    path: "sender receiver",
+    select: "name profilePicture email",
+    match: { _id: { $ne: userData._id } },
+  });
+  return messages
+}
+
+const getMessageByReceiverFromDb = async (user:TTokenUser,receiverId:string) => {
+    const userData = await UserModel.findOne({ email: user.email }).lean();
+  if (!userData) {
+    throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
+  }
+  if (!userData.isActive) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
+  }
+  if (userData.isDelete) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
+  }
+  if (!userData.validation?.isVerified) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
+  }
+
+  const messages = await MessageModel.find({$or:[{sender:userData._id},{receiver:receiverId}]}).populate({
+    path: "sender receiver",
+    select: "name profilePicture email",
+    match: { _id: { $ne: userData._id } },
+  })
+  return messages;
+}
 
 
 
 export const MessageServices = {
-    createMessageIntoDb
+    createMessageIntoDb,
+    getMessagesFromDb,
+    getMessageByReceiverFromDb
 }
