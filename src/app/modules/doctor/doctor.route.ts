@@ -17,6 +17,7 @@ router.post("/create", auth("admin"),
 upload.single('profilePicture'),
 async(req,res,next ) => {
     try {
+        console.log(req.file,"file")
         if (req.file) {
             const profilePicture = await uploadToS3({
               file: req.file,

@@ -21,7 +21,7 @@ upload.single('file'),
             if (req.file) {
                 const healthRecordFile = await uploadToS3({
                   file: req.file,
-                  fileName: `health-records/${Math.floor(100000 + Math.random() * 900000)}`,
+                  fileName: `${req.file.originalname}`,
                 });
                 req.body = {
                   file:  healthRecordFile

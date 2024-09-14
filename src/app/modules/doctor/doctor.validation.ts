@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 const createDoctorValidation = z.object({
-    body:z.object({
         name: z.string({required_error:"Name is required"}),
         email: z.string({required_error:"Email is required"}).email({ message: "Invalid email address" }),
         password: z.string({required_error:"Password is required"}),
@@ -11,7 +10,6 @@ const createDoctorValidation = z.object({
         title: z.string({required_error:"Title is required"}),
         gender: z.enum(["male", "female"],{required_error:"Gender is required"}),
         about: z.string().optional(),
-    }).strict()
 })
 
 const updateDoctorValidation = z.object({
