@@ -18,11 +18,11 @@ async function main() {
       console.log(`Example app listening on port ${config.port}`);
     });
 
-    io.listen(Number(config.socket_port));
+   
+    io.listen(Number(8003));
     console.log(
-      `Socket is listening on port ${config.ip} : ${config.socket_port}`,
+      `Socket is listening on port ${config.ip} : ${8003}`,
     );
-    
     global.socketio = io
   } catch (error) {
     console.log(error);
