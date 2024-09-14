@@ -24,6 +24,7 @@ export interface TPatient extends Document  {
     bloodPressureAlert:boolean;
     glucoseAlert:boolean;
     weightAlert:boolean;
+    age:number
 }
 
 

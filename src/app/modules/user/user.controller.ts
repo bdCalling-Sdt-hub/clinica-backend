@@ -4,12 +4,13 @@ import { UserServices } from "./user.service";
 import catchAsync from "../../utils/catchAsync";
 
 const getAllUser =catchAsync(async (req, res) => {
-    const result = await UserServices.getAllUsersFromDb(req.query);
+    const {users,meta} = await UserServices.getAllUsersFromDb(req.query);
     sendResponse(req,res, {
         statusCode: httpStatus.OK,
         success: true,
         message: 'Users fetched successfully',
-        data:result
+        meta,
+        data:users,
       });
 })
 
@@ -45,7 +46,7 @@ const deleteMyProfile = catchAsync(async (req, res) => {
 
 
 const getUsersCount =catchAsync(async (req, res) => {
-    const result = await UserServices.getUsersCount();
+    const result = await UserServices.getUsersCount(req.query);
     sendResponse(req,res, {
         statusCode: httpStatus.OK,
         success: true,

@@ -6,11 +6,10 @@ const NotificationSchema = new Schema<TNotification>(
         user:{
             type:Schema.Types.ObjectId,
             ref:"User",
-            required:true
         },
         type:{
             type:String,
-            required:true
+            default:null
         },
         title:{
             type:String,
@@ -33,6 +32,10 @@ const NotificationSchema = new Schema<TNotification>(
             default:new Date()
         },
         time:{
+            type:String,
+            required:true
+        },
+        fcmToken:{
             type:String,
             required:true
         }

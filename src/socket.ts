@@ -22,7 +22,6 @@ const initializeSocketIo = (server: HttpServer) => {
             const token = socket.handshake.auth?.token || socket.handshake.headers?.token;
 
             const decode = verifyToken(token, config.jwt_access_secret as Secret) as TTokenUser;
-
             if (!decode) {
                 throw new AppError(httpStatus.UNAUTHORIZED, "Unauthorized");
             }
@@ -40,8 +39,8 @@ const initializeSocketIo = (server: HttpServer) => {
                 throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
             }
 
-            socket.join(decode.email)
-            onlineUser.add(decode.email);
+            socket.join(userData._id.toString())
+            onlineUser.add(userData._id.toString());
 
             socket.on("check",(data,callback)=> {
                 console.log(data)
@@ -57,7 +56,6 @@ const initializeSocketIo = (server: HttpServer) => {
 
                try {
                  const receiverDetails = await UserModel.findById(receiverId).select("name email role profilePicture");
-
                 if (!receiverDetails) {
                     callback({success:false,message:"Receiver not found"})
                 }
@@ -82,6 +80,7 @@ const initializeSocketIo = (server: HttpServer) => {
                         {sender:receiverId, receiver:userData._id},
                     ]
                 })
+                
                } catch (error:any) {
                 callback({
                     success:false,
@@ -99,8 +98,8 @@ const initializeSocketIo = (server: HttpServer) => {
                 }
             })
         socket.on('disconnect', () => {
-        // onlineUser.delete(user?._id?.toString());
-        // io.emit('onlineUser', Array.from(onlineUser));
+        onlineUser.delete(userData?._id?.toString());
+        io.emit('onlineUser', Array.from(onlineUser));
         console.log('disconnect user ', socket.id);
       });
 

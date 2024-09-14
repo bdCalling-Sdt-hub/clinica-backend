@@ -12,6 +12,7 @@ import { ConnectionRoutes } from "../modules/connections/connection.route";
 import { ChatListServices } from "../modules/chatList/chatList.service";
 import { ChatListRoutes } from "../modules/chatList/chatList.route";
 import { MessageRoutes } from "../modules/massage/message.route";
+import { NotificationRoutes } from "../modules/notification/notification.route";
 
 const router = Router();
 
@@ -62,6 +63,10 @@ route: GlucoseRoutes
 {
     path:"/message",
     route: MessageRoutes
+},
+{
+    path:"/notification",
+    route: NotificationRoutes
 }
 ];
 

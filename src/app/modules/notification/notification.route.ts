@@ -1,8 +1,12 @@
 import { Router } from "express";
-import { NotificationServices } from "./notification.service";
+import auth from "../../middlewares/auth";
+import { NotificationControllers } from "./notification.conroller";
 
 const router = Router();
 
 // router.post("/create", NotificationServices.createNotificationIntoDb);
+router.get("/get-notification-list",auth("patient","doctor"), NotificationControllers.getNotification);
+router.patch("/read",auth("patient","doctor"), NotificationControllers.readNotification);
 
-export const ConnectionRoutes = router
+
+export const NotificationRoutes = router

@@ -26,6 +26,7 @@ const PatientSchema = new Schema<TPatient>({
     bloodPressureAlert: { type: Boolean, default: false },
     glucoseAlert: { type: Boolean, default: false },
     weightAlert: { type: Boolean, default: false },
+    age: { type: Number, default: null },
 }, {
     timestamps: true, 
 });

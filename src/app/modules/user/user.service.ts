@@ -8,12 +8,17 @@ import UserModel from "./user.model";
 const getAllUsersFromDb = async (query: Record<string, unknown>) => {
     const patientQuery = new QueryBuilder(UserModel, UserModel.find({isDelete:false}),query).search(["name", "email", "role"],{}).filter().sort().paginate().fields();
     const meta = await patientQuery.countTotal();
-    const patients = await patientQuery.modelQuery;
-    return { meta, patients };
+    const users = await patientQuery.modelQuery;
+    return { meta, users };
 }
 
 const getSingleUserFromDb = async (slug:string) => {
-    const result = await UserModel.findOne({slug,isDelete:false});
+    const result = (await UserModel.findOne({slug,isDelete:false}));
+
+    if(!result){
+        throw new AppError(httpStatus.NOT_FOUND,"User Not Found")
+    }
+
    return result
 }
 
@@ -43,53 +48,62 @@ const deleteMyProfileFromDb = async (user:TTokenUser) => {
 }
 
 
-const getUsersCount = async () => {
+const getUsersCount = async (query: Record<string, unknown>) => {
   const months = [
     "January", "February", "March", "April", "May", "June", 
     "July", "August", "September", "October", "November", "December"
   ];
 
-  const currentYear = new Date().getFullYear();
+  // Use the provided year or default to the current year
+  const targetYear = Number(query?.year) || new Date().getFullYear();
+  console.log(targetYear,"year")
 
   const userCounts = await UserModel.aggregate([
     {
-      // Match users created in the current year
+      // Match users based on the query and creation date in the target year
       $match: {
+        ...query,
         createdAt: {
-          $gte: new Date(`${currentYear}-01-01`), // Start of the current year
-          $lt: new Date(`${currentYear + 1}-01-01`) // Start of the next year
+          $gte: new Date(`${targetYear}-01-01`), // Start of the target year
+          $lt: new Date(`${targetYear + 1}-01-01`) // Start of the next year
         }
       }
     },
     {
-      // Group by month and count users
+      // Group by month and role, then count users
       $group: {
-        _id: { $month: "$createdAt" }, // Group by the month part of the date
+        _id: {
+          month: { $month: "$createdAt" },
+          role: "$role", // Group by role as well
+        },
         count: { $sum: 1 }
       }
     },
     {
       $project: {
         _id: 0, // Remove _id field
-        month: "$_id", // Rename _id to monthIndex
+        monthIndex: "$_id.month", // Month from group _id
+        role: "$_id.role", // Role from group _id
         count: 1
       }
     }
   ]);
 
-  // Map the result to include the month names
-  const result = userCounts.map(({ monthIndex, count }) => ({
-    month: months[monthIndex - 1], // Convert monthIndex (1-based) to month name
-    count
-  }));
+  // Initialize an empty object to hold the results
+  const result = {};
 
-  // Ensure all months are accounted for, filling in with 0 for months without data
-  const allMonths = months.map((month, index) => {
-    const found = result.find(item => {
-      return item.month === month;
-    });
-    
-    return found ? found : { month, count: 0 };
+  // Organize counts by month and role
+  userCounts.forEach(({ monthIndex, role, count }) => {
+    const month = months[monthIndex - 1]; // Convert month index to month name
+    if (!result[month]) {
+      result[month] = { name: month.substr(0, 3), doctor: 0, user: 0 }; // Initialize doctor and user count
+    }
+    result[month][role] = count; // Assign the count based on the role
+  });
+
+  // Ensure all months are accounted for and in the correct format
+  const allMonths = months.map((month) => {
+    return result[month] || { name: month.substr(0, 3), doctor: 0, user: 0 }; // Default to 0 if no data exists for a role
   });
 
   return allMonths;

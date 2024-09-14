@@ -42,13 +42,12 @@ const createBloodPressureIntoDb = async (user:TTokenUser,payload: TBloodPressure
         // High blood pressure (in case blood pressure is equal or above 140/90 or MAP equal of above 106.7
     if (payload?.systolic >= 140) {
     
-
    const notification = await sendNotification([userData.fcmToken],{
     data: {
       type: "bloodPressure",
     },
       title: "High Blood Pressure",
-      body: `Your systolic blood pressure is ${payload.systolic} and diastolic blood pressure is ${payload.diastolic}. Your high blood pressure is high.`
+      body: `Your systolic blood pressure is ${payload.systolic} and diastolic blood pressure is ${payload.diastolic}. Your blood pressure is high.`
     })
 
 
@@ -57,6 +56,20 @@ const createBloodPressureIntoDb = async (user:TTokenUser,payload: TBloodPressure
 //         notification
 //       }],{session})
     }
+
+
+    if (payload?.diastolic >= 90) {
+
+   const notification = await sendNotification([userData.fcmToken],{
+    data: {
+      type: "bloodPressure",
+    },
+      title: "High Low Pressure",
+      body: `Your systolic blood pressure is ${payload.systolic} and diastolic blood pressure is ${payload.diastolic}. Your blood pressure is low.`
+    })
+   }
+    
+
 
     //  if (payload?.diastolic >= 90) {
     //  await NotificationModel.create({

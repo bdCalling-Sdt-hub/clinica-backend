@@ -13,7 +13,7 @@ const app: Application = express();
 // parser
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin:"*", credentials: true,methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"] }));
+app.use(cors({ origin:"http://localhost:3000", credentials: true,methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"] }));
 
 i18next
   .use(Backend)

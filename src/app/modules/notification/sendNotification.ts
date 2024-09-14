@@ -2,6 +2,7 @@ import admin from 'firebase-admin';
 import httpStatus from 'http-status';
 import AppError from '../../errors/AppError';
 import path from "path";
+import NotificationModel from './notification.model';
 // Initialize Firebase Admin with a service account
 
 // const clinicaSericeAccountFile = path.join(process.cwd(), './firebase/clinica-serice-account-file.json');
@@ -19,6 +20,8 @@ export const sendNotification = async (
   fcmToken: string[],
   payload: NotificationPayload,
 ): Promise<any> => {
+
+
   try {
     const response = await admin.messaging().sendEachForMulticast({
       tokens: fcmToken,
@@ -38,6 +41,21 @@ export const sendNotification = async (
         },
       },
     });
+
+    if (response.successCount) {
+     fcmToken?.map(async (token) => {
+        await NotificationModel.create({
+        title: payload.title,
+        fcmToken: token,
+        link: payload.data?.link,
+        message: payload.body,
+        date: new Date(),
+        time: new Date().getTime,
+        type:payload.data.type
+      })
+     })
+    }
+
     return response;
   } catch (error: any) {
     console.error('Error sending message:', error);
@@ -47,7 +65,7 @@ export const sendNotification = async (
       console.error('Error sending message:', error);
       throw new AppError(
         httpStatus.NOT_IMPLEMENTED,
-        'Failed to send notification',
+        error.message || 'Failed to send notification',
       );
     }
   }
