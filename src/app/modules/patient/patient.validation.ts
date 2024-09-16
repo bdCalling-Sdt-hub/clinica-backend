@@ -15,6 +15,7 @@ const updatePatient = z.object({
     email: z.string({ required_error: "Email is required" }).email("Invalid email"),
     contact: z.string({ required_error: "Contact is required" }),
     dateOfBirth: z.string(),
+    age:z.number(),
     gender: z.enum(["male", "female"]),
     bloodGroup: z.enum(["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"]),
     height: z.string(),
@@ -31,7 +32,10 @@ const updatePatient = z.object({
     firstPregnancy: z.boolean(),
     historyOfPreeclampsia: z.boolean(),
     babyBelow2500Grams: z.boolean(),
-    higherRiskOfPreeclampsia: z.boolean()
+    higherRiskOfPreeclampsia: z.boolean(),
+    bloodPressureAlert: z.boolean(),
+    weightAlert: z.boolean(),
+    glucoseAlert: z.boolean(),
   }).partial().strict()
 
 

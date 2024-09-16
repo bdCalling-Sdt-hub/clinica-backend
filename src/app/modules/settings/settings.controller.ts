@@ -13,7 +13,29 @@ const createSettings = catchAsync(async (req, res) => {
     });
 })
 
+const getSettings = catchAsync(async (req, res) => {
+    const result = await SettingsServices.getSettingsFromDb();
+    sendResponse(req, res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Settings fetched successfully",
+        data: result,
+    });
+})
+
+const updateSettings = catchAsync(async (req, res) => {
+    const result = await SettingsServices.updateSettingsIntoDb(req.body);
+    sendResponse(req, res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Settings updated successfully",
+        data: result,
+    });
+})
+
 
 export const SettingsControllers = {
-    createSettings
+    createSettings,
+    updateSettings,
+    getSettings
 }

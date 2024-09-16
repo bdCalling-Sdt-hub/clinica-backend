@@ -23,8 +23,11 @@ async(req,res,next ) => {
               file: req.file,
               fileName: `users/${Math.floor(100000 + Math.random() * 900000)}`,
             });
+            console.log(profilePicture,"profile")
             if (req.body?.data) {
-            req.body = DoctorValidations.createDoctorValidation.parse({...JSON.parse(req?.body?.data),profilePicture})
+            req.body = DoctorValidations.createDoctorValidation.parse({...JSON.parse(req?.body?.data)})
+            req.body.profilePicture = profilePicture
+            console.log(req.body,"body")
             } else {
                 req.body = DoctorValidations.createDoctorValidation.parse({profilePicture})
             }
@@ -59,6 +62,29 @@ async(req,res,next ) => {
         next(error)
     }
 }, DoctorControllers.updateDoctor);
+router.patch("/update-by-admin/:userId", auth("admin"),  
+upload.single('profilePicture'),
+async(req,res,next ) => {
+    console.log(req?.body?.data,"data")
+    try {
+        if (req.file) {
+            const profilePicture = await uploadToS3({
+              file: req.file,
+              fileName: `users/${Math.floor(100000 + Math.random() * 900000)}`,
+            });
+            if (req.body?.data) {
+            req.body = DoctorValidations.updateDoctorValidation.parse({...JSON.parse(req?.body?.data),profilePicture})
+            } else {
+                req.body = DoctorValidations.updateDoctorValidation.parse({profilePicture})
+            }
+        } else if (req?.body?.data) {
+            req.body = DoctorValidations.updateDoctorValidation.parse(JSON.parse(req?.body?.data))
+        }
+    next()
+    } catch (error) {
+        next(error)
+    }
+}, DoctorControllers.updateDoctorByAdmin);
 router.delete("/delete-my-account", auth("doctor"), DoctorControllers.deleteMyAccount);
 router.patch("/action/:slug", auth("admin"), validateRequest(DoctorValidations.doctorActionFromAdminValidation), DoctorControllers.doctorActionFromAdmin);
 

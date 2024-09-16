@@ -1,4 +1,5 @@
 import httpStatus from "http-status";
+import { generateSlug } from "../../utils/generateSlug";
 import QueryBuilder from "../../builder/QueryBuilder";
 import AppError from "../../errors/AppError";
 import { TTokenUser } from "../../types/common";
@@ -13,8 +14,9 @@ const getAllUsersFromDb = async (query: Record<string, unknown>) => {
 }
 
 const getSingleUserFromDb = async (slug:string) => {
+  
     const result = (await UserModel.findOne({slug,isDelete:false}));
-
+  
     if(!result){
         throw new AppError(httpStatus.NOT_FOUND,"User Not Found")
     }
@@ -23,9 +25,10 @@ const getSingleUserFromDb = async (slug:string) => {
 }
 
 const updateUser = async (slug:string,payload:Partial<TUser>) => {
-    const result = await UserModel.findOneAndUpdate({slug,isDelete:false},payload,{new:true,runValidators:true});
+    const result = await UserModel.findOneAndUpdate({slug},{...payload},{new:true,runValidators:true});
     return result
 }
+
 
 const deleteMyProfileFromDb = async (user:TTokenUser) => {
 
@@ -109,12 +112,71 @@ const getUsersCount = async (query: Record<string, unknown>) => {
   return allMonths;
 };
 
+const getUserProfileFromDb = async (user:TTokenUser) => {
+  const userData = await UserModel.findOne({ email: user.email }).lean();
+     if (!userData) {
+    throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
+  }
+  if (!userData.isActive) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
+  }
+  if (userData.isDelete) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
+  }
+  if (!userData.validation?.isVerified) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
+  }
+  return userData
+}
 
+
+const updateUserIntoDb = async(user:TTokenUser,payload:Partial<TUser>) => {
+  const userUpdatedData:Partial<TUser> = {} 
+  const {
+    name,
+    email,
+    profilePicture,
+    contact,
+    role,
+    gender } = payload;
+    if (name) {
+      const slug = generateSlug(name);
+      userUpdatedData.name = name
+      userUpdatedData.slug = slug
+    };
+    if (email) userUpdatedData.email = email;
+    if (profilePicture) userUpdatedData.profilePicture = profilePicture;
+    if (contact) userUpdatedData.contact = contact;
+    if (role) userUpdatedData.role = role;
+    if (gender) userUpdatedData.gender = gender;
+
+    const userData = await UserModel.findOne({email:user.email});
+    if (!userData) {
+        throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
+      }
+      if (!userData.isActive) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
+      }
+      if (userData.isDelete) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
+      }
+      if (!userData.validation?.isVerified) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
+      }
+      try {
+        const result = await UserModel.findOneAndUpdate({email:user.email},userUpdatedData);
+        return result
+      } catch (error:any) {
+        throw new AppError(httpStatus.BAD_REQUEST, error.message);
+      }
+    }
 
 export const UserServices = {
     getAllUsersFromDb,
     getSingleUserFromDb,
     updateUser,
     deleteMyProfileFromDb,
-    getUsersCount
+    getUsersCount,
+    getUserProfileFromDb,
+    updateUserIntoDb
 }

@@ -77,6 +77,16 @@ const deleteMyAccount = catchAsync(async (req, res) => {
     });
 })
 
+const updateDoctorByAdmin = catchAsync(async (req, res) => {
+    const doctor = await DoctorServices.updateDoctorByAdmin(req.params.userId, req.body);
+    sendResponse(req,res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Doctor updated successfully",
+        data: doctor,
+    });
+})
+
 
 export const DoctorControllers = {
     createDoctor,
@@ -85,5 +95,6 @@ export const DoctorControllers = {
     getProfile,
     updateDoctor,
     deleteMyAccount,
-    doctorActionFromAdmin
+    doctorActionFromAdmin,
+    updateDoctorByAdmin
 }

@@ -2,6 +2,7 @@ import httpStatus from "http-status";
 import sendResponse from "../../utils/sendResponse";
 import { UserServices } from "./user.service";
 import catchAsync from "../../utils/catchAsync";
+import { CustomRequest } from "../../types/common";
 
 const getAllUser =catchAsync(async (req, res) => {
     const {users,meta} = await UserServices.getAllUsersFromDb(req.query);
@@ -56,6 +57,28 @@ const getUsersCount =catchAsync(async (req, res) => {
 })
 
 
+const getProfile = catchAsync(async (req, res) => {
+    const user = (req as CustomRequest).user
+    const result = await UserServices.getUserProfileFromDb(user);
+    sendResponse(req,res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Profile fetched successfully',
+        data:result
+      });
+})
+
+const updateProfile = catchAsync(async (req, res) => {
+    const user = (req as CustomRequest).user
+    const result = await UserServices.updateUserIntoDb(user,req.body);
+    sendResponse(req,res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Profile updated successfully',
+        data:result
+      });
+})
+
 
 
 
@@ -64,5 +87,7 @@ export const UserControllers = {
     getSingleUser,
     updateUser,
     deleteMyProfile,
-    getUsersCount
+    getUsersCount,
+    getProfile,
+    updateProfile
 }

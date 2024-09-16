@@ -44,8 +44,6 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
     message = simplifiedError?.message;
     errorSources = simplifiedError?.errorSources;
   } else if (error instanceof AppError) {
-      console.log(error,"error")
-    
     const messageFirstWord = error.message.split(" ")[0];
     const isDuplicateError = error.message.split(" ").find(word => word === "E11000");
     if (messageFirstWord === "E11000" || isDuplicateError) {

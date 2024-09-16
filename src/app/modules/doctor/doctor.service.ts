@@ -25,6 +25,7 @@ const createDoctorFromDb = async (payload: TDoctor & TUser) => {
     try {
       session.startTransaction();
       payload.role = "doctor";
+      payload.validation = {isVerified:true,expiry:null,otp:null}
       // Create User document
      const user = await UserModel.create([payload], { session });
       // Retrieve the created User document
@@ -40,7 +41,7 @@ const createDoctorFromDb = async (payload: TDoctor & TUser) => {
         throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
       }
          // Create doctor document
-         await DoctorModel.create([{ ...payload, user:userData._id,slug:userData.slug }], { session });
+         (await DoctorModel.updateOne([{ ...payload, user:userData._id,slug:userData.slug }], { session, }));
       //  SEND EMAIL FOR VERIFICATION
       const otp = Math.floor(100000 + Math.random() * 900000);   
       const currentTime = new Date();
@@ -108,6 +109,60 @@ const getProfileFromDb = async () => {
     const profile = await DoctorModel.find().populate("user");
     return profile;
 };
+
+const updateDoctorByAdmin= async (userId:string,payload: Partial<TDoctor> & Partial<TUser> ) => {
+  const userUpdatedData:Partial<TUser> = {} 
+
+  const {
+    name,
+    email,
+    profilePicture,
+    contact,
+    password,
+    role,
+    gender, ...patientUpdatedData } = payload;
+    if (name) {
+      const slug = generateSlug(name);
+      userUpdatedData.name = name
+      userUpdatedData.slug = slug
+      patientUpdatedData.slug = slug
+    };
+    if (email) userUpdatedData.email = email;
+    if (profilePicture) userUpdatedData.profilePicture = profilePicture;
+    if (contact) userUpdatedData.contact = contact;
+    if (role) userUpdatedData.role = role;
+    if (gender) userUpdatedData.gender = gender;
+
+    const userData = await UserModel.findById(userId);
+    if (!userData) {
+        throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
+      }
+      if (!userData.isActive) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
+      }
+      if (userData.isDelete) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
+      }
+      if (!userData.validation?.isVerified) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
+      }
+      const session = await mongoose.startSession();
+      try {
+        session.startTransaction();
+        await UserModel.findByIdAndUpdate(userId,userUpdatedData,{session});
+        await DoctorModel.findOneAndUpdate({user:userData._id},patientUpdatedData,{session});
+        await session.commitTransaction();
+        session.endSession();
+        return {
+          ...patientUpdatedData,
+          user:userUpdatedData
+        }
+      } catch (error:any) {
+        await session.abortTransaction();
+        session.endSession();
+        throw new AppError(httpStatus.BAD_REQUEST, error.message);
+      }
+}
 
 const updateDoctorIntoDb = async (user: TTokenUser, payload: Partial<TDoctor> & Partial<TUser> ) => {
 
@@ -217,5 +272,6 @@ export const DoctorServices = {
     getProfileFromDb,
     updateDoctorIntoDb,
     deleteMyProfileFromDb,
-    doctorActionFromAdmin
+    doctorActionFromAdmin,
+    updateDoctorByAdmin
 }

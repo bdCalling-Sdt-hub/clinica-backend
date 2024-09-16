@@ -2,9 +2,9 @@ import { Router } from "express";
 import multer, { memoryStorage } from "multer";
 import { uploadToS3 } from "../../constant/s3";
 import auth from "../../middlewares/auth";
+import validateRequest from "../../middlewares/validateRequest";
 import { PatientController } from "./patient.controller";
 import { PatientValidation } from "./patient.validation";
-import validateRequest from "../../middlewares/validateRequest";
 const storage = memoryStorage();
 const upload = multer({ storage });
 
@@ -47,6 +47,8 @@ router.patch("/update-profile",
     },
     PatientController.updatePatientProfile
 )
+
+
 
 
 

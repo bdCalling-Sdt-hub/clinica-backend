@@ -5,6 +5,7 @@ export interface TDoctor extends Document {
     slug: string
     title: string;
     experience: string;
+    dob: string;
     address: string;
     about:string;
     isActive: boolean;
