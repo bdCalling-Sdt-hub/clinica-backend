@@ -121,6 +121,81 @@ const getChatListFromDb = async (user: TTokenUser, query: Record<string, unknown
 
   return chatData;
 };
+const getMyChatListFromDb = async (userID:string) => {
+  // Find the user based on the email provided by the token
+  const userData = await UserModel.findById(userID);
+  
+  // Handle cases where the user is not found or is inactive/deleted/unverified
+  if (!userData) {
+    throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
+  }
+  if (!userData.isActive) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Blocked");
+  }
+  if (userData.isDelete) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Account is Deleted");
+  }
+  if (!userData.validation?.isVerified) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Your Account is not verified");
+  }
+
+  // Retrieve the chat list where the user is a participant
+  const chatsList = await ChatListModel.find({
+    'participants.user': userData._id,
+  }).populate({
+    path: 'participants.user',
+    select: 'name slug email profilePic gender contact role _id',
+    match: { _id: { $ne: userData._id } }, // Exclude the current user
+  });
+
+  if (!chatsList || chatsList.length === 0) {
+    throw new AppError(httpStatus.NOT_FOUND, "Chat List Not Found");
+  }
+
+  const chatData = [];
+
+  // Loop through each chat and get the latest message and unread message count
+  for (const chat of chatsList) {
+    // Filter out participants who are marked as deleted
+    const filteredParticipants = chat.participants.filter(participant => !participant.isDelete);
+
+    // Get the latest message in the chat
+    const latestMessage = (await MessageModel.findOne({ chat: chat._id }).populate({path:"sender receiver",select:"name profilePicture createdAt updatedAt"}).sort({ updatedAt: -1 }))
+
+    // Get the count of unread messages for this chat
+    const unreadMessageCount = await MessageModel.countDocuments({
+      chat: chat._id,
+      seen: false,
+      sender: { $ne: userData._id },
+    });
+
+    // Construct the chat object with the participants, latest message, and unread message count
+    chatData.push({
+      chatId: chat._id,
+      participants: filteredParticipants,
+      latestMessage: latestMessage
+        ? {
+            sender: latestMessage.sender,
+            receiver: latestMessage.receiver,
+            text: latestMessage.text,
+            file: latestMessage.file,
+            seen: latestMessage.seen,
+            createdAt: latestMessage.createdAt,
+          }
+        : null,
+      unreadMessageCount,
+    });
+  }
+
+  // Sort chat data based on the latest message date
+  chatData.sort((a, b) => {
+    const dateA = (a.latestMessage && a.latestMessage.createdAt) || 0;
+    const dateB = (b.latestMessage && b.latestMessage.createdAt) || 0;
+    return dateB - dateA;
+  });
+
+  return chatData;
+};
 
 
 const deleteUserFromChatList = async (user: TTokenUser, userId: string) => {
@@ -172,9 +247,17 @@ const deleteUserFromChatList = async (user: TTokenUser, userId: string) => {
 };
 
 
+const getChatListByUserId = async (userId:string) => {
+  const chatList = await ChatListModel.find({participants: { $elemMatch: { user: userId } }});
+  return chatList
+}
+
+
 
 export const ChatListServices = {
     createChatListIntoDb,
     deleteUserFromChatList,
-    getChatListFromDb
+    getChatListFromDb,
+    getChatListByUserId,
+    getMyChatListFromDb
 }

@@ -27,4 +27,5 @@ router.post("/create", auth("doctor", "patient"), upload.single('file'),
             next(error)
         }
     }, MessageControllers.createMessage);
+router.patch("/seen/:chatId", auth("doctor", "patient"), MessageControllers.seenMessage);
 export const MessageRoutes = router

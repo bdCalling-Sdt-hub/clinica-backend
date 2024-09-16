@@ -37,11 +37,23 @@ const getMessageByReceiver = catchAsync(async (req, res) => {
     });
 })
 
+const seenMessage = catchAsync(async (req, res) => {
+    const user = (req as CustomRequest).user
+    const result = await MessageServices.seenMessageIntoDb(user, req.params.chatId);
+    sendResponse(req, res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Messages fetched successfully",
+        data: result,
+    });
+})
+
 
 export const MessageControllers = {
     createMessage,
     getMessages,
-    getMessageByReceiver
+    getMessageByReceiver,
+    seenMessage
 }
 
 
