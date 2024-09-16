@@ -36,7 +36,12 @@ router.patch("/update-profile",
                   file: req.file,
                   fileName: `users/${Math.floor(100000 + Math.random() * 900000)}`,
                 });
-                req.body = PatientValidation.updatePatient.parse({...JSON.parse(req?.body?.data),profilePicture})
+                if (req.body.data) {
+                    
+                    req.body = PatientValidation.updatePatient.parse({...JSON.parse(req?.body?.data),profilePicture})
+                } else {
+                    req.body = PatientValidation.updatePatient.parse({profilePicture})
+                }
             } else {
                 req.body = PatientValidation.updatePatient.parse(JSON.parse(req?.body?.data))
             }
