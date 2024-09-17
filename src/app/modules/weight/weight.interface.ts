@@ -5,4 +5,4 @@ export interface TWeight extends Document  {
     date: string;
     time: string;
     weight: number;
-}
+};
