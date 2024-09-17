@@ -32,5 +32,11 @@ export default {
   firebase_storagebucket:process.env.FIREBASE_STORAGEBUCKET,
   firebase_messagingsenderid:process.env.FIREBASE_MESSAGINGSENDERID,
   firebase_appid:process.env.FIREBASE_APPID,
+  },
+  email:{
+    host:process.env.EMAIL_HOST,
+    port:process.env.EMAIL_PORT,
+    user:process.env.EMAIL_USER,
+    pass:process.env.EMAIL_PASS
   }
 };

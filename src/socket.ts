@@ -477,7 +477,7 @@ const initializeSocketIO = (server: HttpServer) => {
       //----------------------chat list------------------------//
       socket.on('my-chat-list', async (data, callback) => {
         try {
-          const chatList = await ChatListServices.getChatListByUserId(userData?._id as string);
+          const chatList = await ChatListServices.getMyChatListFromDb(userData?._id as string);
           const myChat = 'chat-list::' + userData?._id;
 
           io.emit(myChat, chatList);

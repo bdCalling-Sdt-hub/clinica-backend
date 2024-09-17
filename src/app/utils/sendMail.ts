@@ -1,6 +1,5 @@
 import nodemailer from "nodemailer";
 import config from "../config";
-//import config from "../config";
 
 type TEmail = {
   to: string;
@@ -10,18 +9,19 @@ type TEmail = {
 
 export const sendMail = async ({ to, html,subject }: TEmail) => {
   const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
+    // @ts-ignore
+    host: config.email.host || "smtp.gmail.com",
+    port: config.email.port,
     secure: config.NODE_ENV !== "development",
     auth: {
-      user: "masumraihan3667@gmail.com",
-      pass: "lesa itqt nlqw emxr",
+      user: config.email.user,
+      pass: config.email.pass,
     },
-  });
+  }) as any;
 
   // send mail with defined transport object
   await transporter.sendMail({
-    from: "masumraihan3667@gmail.com", // sender address
+    from: config.email.user, // sender address
     to, // list of receivers
     subject,
     html,

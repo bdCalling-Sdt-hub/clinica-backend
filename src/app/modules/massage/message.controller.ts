@@ -55,5 +55,3 @@ export const MessageControllers = {
     getMessageByReceiver,
     seenMessage
 }
-
-
